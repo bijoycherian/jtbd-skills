@@ -64,6 +64,7 @@ SOURCE_ALIASES = {"edited": "judgement", "your judgement": "judgement", "your_ju
                   "evidence update": "evidence_update", "updated from evidence": "evidence_update",
                   "ai estimate": "ai", "estimate": "ai", "": "ai"}
 BASED_ON_ORDER = ["ai", "judgement", "evidence_update", "survey"]
+PLURAL = ("ai", "judgement", "evidence_update")  # "2 survey" stays: survey scores
 
 # ---- Columns
 EVIDENCE_COLS = ["schema_version", "evidence_id", "source_id", "location", "quote", "type",
@@ -436,7 +437,8 @@ def decision_drift(jobs, logs):
 
 
 def based_on(jobs):
-    """'Based on: 6 AI estimates · 2 team judgement · 1 evidence update' (read-outs and images get forwarded, so: team)"""
+    """'Based on: 6 AI estimates · 2 team judgements · 1 evidence update' (read-outs and images get forwarded, so: team).
+    The page's basedOn() must say the same; scripts/test_parity.py checks it."""
     c = {}
     for j in jobs:
         s = norm_source(j.get("source"))
@@ -444,7 +446,7 @@ def based_on(jobs):
     parts = []
     for s in BASED_ON_ORDER:
         if c.get(s):
-            name = ("team judgement" if s == "judgement" else SOURCES[s]) + ("s" if s == "ai" and c[s] != 1 else "")
+            name = ("team judgement" if s == "judgement" else SOURCES[s]) + ("s" if s in PLURAL and c[s] != 1 else "")
             parts.append(f"{c[s]} {name}")
     return "Based on: " + " · ".join(parts)
 

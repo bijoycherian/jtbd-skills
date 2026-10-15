@@ -105,7 +105,7 @@ Try it with the research you already have. I’d love to hear where the job list
 
 ## Status and limits
 
-**v1.0.0.** The automated checks pass on every change, and the full flow has been run by hand in the Claude app. Results are in [EVALS.md](EVALS.md).
+**v1.0.1.** The automated checks pass on every change, and the full flow has been run by hand in the Claude app. Results are in [EVALS.md](EVALS.md).
 
 - **Study size:** about 75,000 words (7–8 hour-long interviews plus ~100 tickets) are read in one go; larger studies are read in batches and haven't been fully tested.
 - **Needs** Python 3.9+, plus openpyxl and matplotlib for the spreadsheet and chart. Without them you still get the map, and the run says what's missing.

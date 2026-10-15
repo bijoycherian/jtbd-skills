@@ -7,8 +7,18 @@
   "plugins": [
     {
       "name": "jtbd-skills",
+      "displayName": "JTBD Opportunity Landscape",
       "source": "./",
-      "description": "Understand your customers deeply. JTBD Opportunity Landscape turns customer interviews into ranked jobs to be done, with the quotes behind each one. AI estimates are labelled, and you can challenge any score or refine a job before deciding what to build."
+      "description": "Understand your customers deeply. JTBD Opportunity Landscape turns customer interviews into ranked jobs to be done, with the quotes behind each one. AI estimates are labelled, and you can challenge any score or refine a job before deciding what to build.",
+      "category": "product",
+      "keywords": [
+        "jobs-to-be-done",
+        "jtbd",
+        "customer-research",
+        "interviews",
+        "opportunity-map",
+        "product-discovery"
+      ]
     }
   ]
 }

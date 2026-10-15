@@ -1,9 +1,19 @@
 {
   "name": "jtbd-skills",
-  "version": "1.0.0",
+  "displayName": "JTBD Opportunity Landscape",
+  "version": "1.0.1",
   "description": "Understand your customers deeply. JTBD Opportunity Landscape turns customer interviews into ranked jobs to be done, with the quotes behind each one. AI estimates are labelled, and you can challenge any score or refine a job before deciding what to build.",
   "author": {
     "name": "Bijoy Cherian"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "homepage": "https://github.com/bijoycherian/jtbd-skills",
+  "keywords": [
+    "jobs-to-be-done",
+    "jtbd",
+    "customer-research",
+    "interviews",
+    "opportunity-map",
+    "product-discovery"
+  ]
 }

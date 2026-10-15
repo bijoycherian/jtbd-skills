@@ -46,7 +46,7 @@ HIGH_OPP = 12              # opportunity > 12 with satisfaction < 80 -> High
 MIN_N = 30                 # fewer respondents per persona -> "small sample" flag
 # ----------------------------------------------------------------------------
 
-VERSION = "1.0.0"
+VERSION = "1.0.1"
 
 ZONES = ["High opportunity", "Solid opportunity", "Modest opportunity",
          "Table stakes", "Served right", "Over-served"]

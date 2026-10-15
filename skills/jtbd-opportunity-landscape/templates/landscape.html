@@ -206,10 +206,11 @@ const ZONES = [
 const STORE = "jtbd-landscape:" + (D.study || D.title);
 /* where each score came from (references/jobs-file.md): ai, evidence_update, judgement, survey */
 const NS = s => { s = String(s || "").trim().toLowerCase(); return ({"": "ai", edited: "judgement", "your judgement": "judgement", "evidence update": "evidence_update", "ai estimate": "ai"})[s] || s; };
-const SRC = {ai: "AI estimate", evidence_update: "evidence update", judgement: "your judgement", survey: "survey"};
-const isEst = j => j.source === "ai" || j.source === "evidence_update";
+/*BASED-ON-START*/const SRC = {ai: "AI estimate", evidence_update: "evidence update", judgement: "your judgement", survey: "survey"};
+const PLURAL = ["ai", "judgement", "evidence_update"];
 function basedOn(list, who){ const c = {}; list.forEach(j => c[j.source] = (c[j.source] || 0) + 1);
-  return "Based on: " + ["ai", "judgement", "evidence_update", "survey"].filter(k => c[k]).map(k => c[k] + " " + (k === "judgement" && who === "team" ? "team judgement" : SRC[k]) + ((k === "ai" || k === "evidence_update") && c[k] !== 1 ? "s" : "")).join(" · "); }
+  return "Based on: " + ["ai", "judgement", "evidence_update", "survey"].filter(k => c[k]).map(k => c[k] + " " + (k === "judgement" && who === "team" ? "team judgement" : SRC[k]) + (PLURAL.includes(k) && c[k] !== 1 ? "s" : "")).join(" · "); }/*BASED-ON-END*/
+const isEst = j => j.source === "ai" || j.source === "evidence_update";
 function trustNote(list){ const judged = list.filter(j => j.source === "judgement").length;
   if (judged) return `${judged} score${judged === 1 ? " reflects" : "s reflect"} your team's view rather than customer evidence. Survey before deciding what to build.`;
   if (list.length && list.every(j => j.source === "survey")) return "All scores are measured. Check the margins of error and any “zone could change” flags.";

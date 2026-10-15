@@ -10,7 +10,7 @@
 | Survey (`survey`) | Measured top-2-box | Measured, with a margin of error | Plain circle | "Survey", n, and "zone could change" when it applies |
 
 **Based on.** The page banner, the image and the read-out summarise the mix:
-`jtbd_files.py based-on jobs.csv` prints "Based on: 6 AI estimates · 2 team judgement · 1 evidence update". Read-outs and images get forwarded, so they say "team judgement"; only the page, which its author reads, says "your judgement".
+`jtbd_files.py based-on jobs.csv` prints "Based on: 6 AI estimates · 2 team judgements · 1 evidence update". Read-outs and images get forwarded, so they say "team judgement(s)"; only the page, which its author reads, says "your judgement".
 
 **How far to trust it** (`jtbd_files.py based-on` prints this line too):
 - Mostly estimates: "Scores include AI estimates: good for choosing what to survey. Run the survey before deciding what to build."
