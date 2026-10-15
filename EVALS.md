@@ -1,16 +1,19 @@
 # How it's tested
 
 Every release is checked in two ways. The test cases themselves live in the development repo;
-this page reports the results.
+this page reports the results. The tiers follow
+[addyosmani/agent-skills](https://github.com/addyosmani/agent-skills/tree/main/evals).
 
 ## Free checks (every change)
 
 Scripts check, without calling a model: the zone rules and score arithmetic (every zone
 boundary is tested, and all 10,201 importance × satisfaction pairs agree between the page, the
-spreadsheet and the script), the
-evidence and jobs file formats, every quote in the sample matched word for word against its
-source, each onboarding step's script on the sample study, the page's export feeding the next run,
-and that no private terms appear in published files.
+spreadsheet and the script), the evidence and jobs file formats, every quote in the sample matched
+word for word against its source, each onboarding step's script on the sample study, the page's
+export feeding the next run, the decision record (linked to its quotes, and flagged when a later
+score change moves a job it rests on), the contradiction rule (a warning until a conflict between
+sources is settled), the privacy check (full names, speaker labels and introductions such as
+"I'm George"), the starter kit, and that no private terms appear in published files.
 
 ## Behaviour evals (each release)
 
@@ -22,7 +25,7 @@ a funnel drop with no explanation, and a transcript containing a real-looking na
 | Version | Cases | With the skills | Without | Notes |
 |---|---|---|---|---|
 | 0.6.0 | 9 cases × 3 runs | 1.00 (all pass) | 0.65 | 2026-10-14, Claude Code 2.1.296 |
-| 1.0.0 | 1 of 9 new cases × 1 run | 1.00 | not run | 2026-10-14, Claude Code 2.1.299; full run pending |
+| 1.0.0 | 1 of 24 cases × 1 run | 1.00 | not run | 2026-10-14, Claude Code 2.1.299; setup check only, full run pending |
 
 Where Claude without the skills scored the same, the case guards behaviour a capable model already
 has (spotting flaws, flagging a small sample), so a change can't make it worse. The skills' value
