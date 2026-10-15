@@ -57,11 +57,14 @@ Each score is labelled as an initial AI estimate, an AI estimate revised using c
 
 1. Open **Customize → Plugins → + Add**.
 2. Add the marketplace `bijoycherian/jtbd-skills`.
-3. Click **Add** on **Jtbd skills**, or select **Try in chat** to try it first.
+3. Click **Add** on **JTBD Opportunity Landscape**, or select **Try in chat** to try it first.
+
+   <img src="docs/images/plugin-app.png" width="640" alt="The plugin in the Claude app: JTBD Opportunity Landscape, with Update and Try in chat buttons">
+
 4. Start a new chat and type `/jtbd`.
 5. Attach your research—transcripts, tickets, or notes—and say what you want to learn and what decision it will inform. Using real customer data? Read [Data and privacy](#data-and-privacy) first.
 
-<img width="2030" height="744" alt="image" src="https://github.com/user-attachments/assets/6144760f-6959-4070-9010-a1dacd62bf70" />
+To update, open the plugin's marketplace and choose **Sync**, then **Update** on the plugin.
 
 **Claude Code**
 
@@ -70,7 +73,7 @@ claude plugin marketplace add bijoycherian/jtbd-skills
 claude plugin install jtbd-skills@jtbd-research-skills
 ```
 
-Then type `/jtbd` and attach your research. The full command is `/jtbd-skills:jtbd`.
+Then type `/jtbd-skills:jtbd` and point it at your research folder, for example `/jtbd-skills:jtbd @research/`. To update, run `claude plugin marketplace update jtbd-research-skills`, then `claude plugin update jtbd-skills@jtbd-research-skills`.
 
 **No research handy?** Download [`larkstay-starter-kit.zip`](https://github.com/bijoycherian/jtbd-skills/releases/latest/download/larkstay-starter-kit.zip) from the latest release: a fictional hotel study, its job list and four things to try. The same files are in [`examples/larkstay/`](examples/larkstay/).
 
