@@ -1,0 +1,902 @@
+<meta charset="utf-8">
+<title>__PAGE_TITLE__</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: working tool on warm neutrals. Header with actions; estimate banner; landscape card (legend + chart) beside the score table; stacks below 1040px. One accent (blue) for selection and actions; zone colours only for zones. */
+:root{
+  /*__TOKENS_LIGHT__*/
+  --f-body:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  /*__TOKENS_DARK__*/ color-scheme:dark}}
+:root[data-theme="dark"]{
+  /*__TOKENS_DARK__*/ color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.45}
+.wrap{max-width:1320px;margin:0 auto;padding-inline:16px;padding-block:24px 40px;display:flex;flex-direction:column;gap:16px}
+@media (min-width:720px){.wrap{padding-inline:32px}}
+h1{font-size:22px;font-weight:600;margin:0;letter-spacing:-.01em;text-wrap:balance}
+.sub{color:var(--muted);margin:4px 0 0;font-size:13.5px}
+.head{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-start;justify-content:space-between}
+.actions{display:flex;gap:8px;flex-wrap:wrap;position:relative}
+.btn{border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);border-radius:8px;padding:9px 14px;font:inherit;font-weight:500;cursor:pointer;display:inline-flex;gap:8px;align-items:center}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{background:var(--accent-hover);border-color:var(--accent-hover)}
+.btn svg{width:14px;height:14px}
+.menu{position:absolute;top:calc(100% + 6px);right:0;min-width:240px;background:var(--surface);border:1px solid var(--line-strong);border-radius:10px;padding:6px;z-index:5;box-shadow:0 8px 24px rgba(0,0,0,.12)}
+.menu button,.menu label{display:block;width:100%;text-align:left;border:0;background:none;color:var(--ink);font:inherit;padding:8px 10px;border-radius:6px;cursor:pointer}
+.menu button:hover,.menu label:hover{background:var(--bg)}
+.menu .sep{height:1px;background:var(--line);margin:6px 4px}
+.menu small{display:block;color:var(--muted);font-size:12px}
+button:focus-visible,input:focus-visible,label:focus-within,.pt:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.banner{display:flex;gap:10px;align-items:flex-start;background:var(--warn-bg);color:var(--warn-ink);border:1px solid var(--warn-line);border-radius:10px;padding:10px 14px}
+.banner b{font-weight:600}
+.banner .est{flex:0 0 auto;margin-top:2px;width:16px;height:16px;border-radius:50%;border:2px solid currentColor}
+.main{display:grid;grid-template-columns:1fr;gap:16px;align-items:start}
+@media (min-width:1040px){.main{grid-template-columns:minmax(0,.86fr) minmax(0,1.14fr)}.chartcard{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px)}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;min-width:0}
+.chartcard{padding:16px 16px 14px}
+.legend{display:flex;flex-wrap:wrap;gap:4px 6px;margin-bottom:6px}
+.lg{border:1px solid transparent;background:none;color:var(--ink);font:inherit;font-size:13px;display:inline-flex;align-items:center;gap:6px;padding:3px 8px 3px 6px;border-radius:6px;cursor:pointer}
+.lg:hover{border-color:var(--line)}
+.lg[aria-pressed="true"]{border-color:var(--ink);background:var(--bg)}
+.lg .sw{width:11px;height:11px;border-radius:3px;border:1px solid var(--line-strong)}
+.lgroup{display:inline-flex;flex-wrap:wrap;align-items:center;gap:2px;border:1px solid var(--line);border-radius:8px;padding:2px 4px}
+.glabel{border:1px solid transparent;background:none;font:inherit;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--z-under-ink);padding:3px 6px;border-radius:6px;cursor:pointer}
+.glabel .n{font-family:var(--f-mono);color:var(--muted);font-weight:400;letter-spacing:0}
+.glabel[aria-pressed="true"]{border-color:var(--ink);background:var(--bg)}
+.lg .n{font-family:var(--f-mono);color:var(--muted);font-variant-numeric:tabular-nums}
+#chart svg{display:block;width:100%;height:auto;touch-action:pan-y;user-select:none}
+#chart .pt.selpt{touch-action:none;cursor:grab}
+.reason{display:flex;gap:6px;align-items:center;flex-basis:100%;margin-top:2px}
+.reason input{flex:1;min-width:0;font:inherit;font-size:12.5px;padding:5px 8px;border:1px solid var(--accent);border-radius:6px;background:var(--surface);color:var(--ink)}
+.hist{margin:0;padding-left:16px}
+.hist li{margin:3px 0}
+.hist .when{font-family:var(--f-mono);font-size:11.5px;color:var(--muted)}
+.tag.override{color:var(--warn-ink);border-color:var(--warn-line);background:var(--warn-bg)}
+.keyline{display:flex;flex-wrap:wrap;gap:4px 16px;color:var(--muted);font-size:12.5px;padding-top:6px}
+.keyline span{display:inline-flex;gap:6px;align-items:center}
+.tscroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:620px}
+th,td{padding:12px 10px;border-bottom:1px solid var(--line);vertical-align:middle;text-align:left}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:500;padding-block:14px}
+th:first-child,td:first-child{padding-left:20px}
+th.num,td.num{text-align:right}
+tr.row td{transition:background .12s}
+tr.row.sel td{background:var(--accent-tint)}
+tr.row.sel td:first-child{box-shadow:inset 3px 0 0 var(--accent);color:var(--accent);font-weight:600}
+.lab{font-family:var(--f-mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.need{font-weight:500;font-size:14.5px}
+.stmt{color:var(--muted);font-size:12.5px;margin-top:2px;max-width:60ch}
+.prov{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;margin-top:4px;font-size:12px;color:var(--muted)}
+.tag{font-size:11.5px;padding:1px 6px;border-radius:4px;background:var(--est-bg);color:var(--est-ink);border:1px solid var(--line)}
+.tag.survey{color:var(--ink);border-color:var(--line-strong)}
+.link{border:0;background:none;color:var(--accent);font:inherit;font-size:12px;cursor:pointer;padding:0}
+.link:hover{text-decoration:underline}
+.tag.edited{color:var(--accent);border-color:var(--accent);background:transparent}
+.tag.judge{color:var(--ink);border-color:var(--ink)}
+.banner .based{display:block;font-weight:600;margin-bottom:2px}
+.banner .skew{display:block;margin-top:4px}
+.wording{grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px 14px}
+.wording label{display:flex;flex-direction:column;gap:3px;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:500}
+.wording input{font:inherit;font-size:13.5px;text-transform:none;letter-spacing:0;color:var(--ink);background:var(--surface);border:1px solid var(--line-strong);border-radius:6px;padding:7px 9px;width:100%}
+.wording input.changed{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.wording .orig{font-size:12px;text-transform:none;letter-spacing:0;color:var(--muted);font-weight:400}
+.lint{grid-column:1/-1;font-size:12.5px;color:var(--warn-ink);background:var(--warn-bg);border:1px solid var(--warn-line);border-radius:6px;padding:6px 10px}
+.lint ul{margin:0;padding-left:16px}
+.flag{color:var(--warn-ink);background:var(--warn-bg);border:1px solid var(--warn-line);font-size:11.5px;padding:0 6px;border-radius:4px}
+input[type=number]{width:60px;font:inherit;font-family:var(--f-mono);font-size:14.5px;font-variant-numeric:tabular-nums;text-align:center;padding:7px 4px;border:1px solid transparent;border-bottom:1.5px dashed var(--est-line);border-radius:6px 6px 0 0;background:var(--bg);color:var(--ink);-moz-appearance:textfield}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+input[type=number]{appearance:textfield}
+input[type=number].firm{border-bottom:1.5px solid var(--ink);background:var(--surface)}
+input[type=number]:hover{border-color:var(--line-strong)}
+.score{font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-size:14.5px}
+.pill{display:inline-block;padding:2px 10px;border-radius:999px;font-size:12.5px;font-weight:500;white-space:nowrap}
+tr.det td{background:var(--bg);font-size:13px;padding-block:14px}
+.detgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.detgrid h4{margin:0 0 4px;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:500}
+.detgrid p{margin:0}
+.detgrid ul{margin:0;padding-left:16px}
+.detgrid li{margin:3px 0}
+.qid{font-family:var(--f-mono);font-size:11.5px;color:var(--muted)}
+.localnote{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;justify-content:space-between;padding:10px 20px;border-bottom:1px solid var(--line);font-size:13px;color:var(--muted)}
+.localnote.dirty{color:var(--ink);background:var(--plot)}
+.localnote button{font:inherit;font-weight:600;color:var(--ink);background:none;border:1px solid var(--line);border-radius:6px;padding:3px 10px;cursor:pointer}
+.tfoot{padding:14px 20px;color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center}
+.tfoot .eg{display:inline-block;width:26px;border-bottom:1.5px dashed var(--est-line);vertical-align:middle}
+.tfoot .eg.firm{border-bottom-style:solid;border-color:var(--ink)}
+.foot{color:var(--muted);font-size:12.5px;display:grid;gap:4px;max-width:90ch}
+.toast{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:8px;font-size:13px;max-width:calc(100vw - 32px);z-index:9}
+.empty{padding:28px 20px;color:var(--muted)}
+@media (max-width:640px){
+  table{min-width:0}
+  thead{display:none}
+  tr.row{display:grid;grid-template-columns:30px 70px 70px 1fr auto;grid-template-areas:"n job job job job" "n imp sat score zone";column-gap:8px;padding:12px 14px 12px 0;border-bottom:1px solid var(--line)}
+  tr.row td{border:0;padding:0}
+  tr.row td:nth-child(1){grid-area:n;padding-left:14px;padding-top:2px}
+  tr.row td:nth-child(2){grid-area:job;padding-bottom:10px}
+  tr.row td:nth-child(3){grid-area:imp;text-align:left}
+  tr.row td:nth-child(4){grid-area:sat;text-align:left}
+  tr.row td:nth-child(5){grid-area:score;align-self:center;text-align:left}
+  tr.row td:nth-child(6){grid-area:zone;align-self:center}
+  tr.row td:nth-child(3)::before{content:"Imp.";display:block;font-size:11px;color:var(--muted)}
+  tr.row td:nth-child(4)::before{content:"Sat.";display:block;font-size:11px;color:var(--muted)}
+  tr.row td:nth-child(5)::before{content:"Score";display:block;font-size:11px;color:var(--muted);font-family:var(--f-body)}
+  tr.row.sel td:first-child{box-shadow:none}
+  tr.row.sel{background:var(--accent-tint);box-shadow:inset 3px 0 0 var(--accent)}
+  tr.det{display:block}
+  tr.det td{display:block;padding:14px}
+  tr.det td:first-child{display:none}
+  .stmt{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="head">
+    <div>
+      <h1 id="title"></h1>
+      <p class="sub" id="sub"></p>
+    </div>
+    <div class="actions">
+      <button class="btn" id="export" type="button" aria-haspopup="true" aria-expanded="false">Export <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>
+      <label class="btn primary" for="survey">Add survey data<input id="survey" type="file" accept=".csv,text/csv" hidden></label>
+      <div class="menu" id="menu" role="menu" hidden>
+        <button type="button" role="menuitem" data-act="png">Chart image (PNG)</button>
+        <button type="button" role="menuitem" data-act="xlsx">Spreadsheet (Excel)<small>Scores and zones as live formulas</small></button>
+        <button type="button" role="menuitem" data-act="csv">Jobs file (CSV)<small>Everything, with quotes. Keep it for the next run</small></button>
+        <div class="sep"></div>
+        <button type="button" role="menuitem" data-act="copy">Copy changes for Claude</button>
+        <button type="button" role="menuitem" data-act="report">Copy run report<small>Counts only, no customer content. For a GitHub issue</small></button>
+        <label role="menuitem" for="import">Import edited CSV<input id="import" type="file" accept=".csv,text/csv" hidden></label>
+        <div class="sep"></div>
+        <button type="button" role="menuitem" data-act="reset" id="reset">Restore original scores and wording</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="banner" id="banner" role="status" hidden><span class="est" aria-hidden="true"></span><div id="bannertext"></div></div>
+
+  <div class="main">
+    <section class="card chartcard" aria-label="Opportunity map">
+      <div class="legend" id="legend" role="group" aria-label="Filter by zone"></div>
+      <div id="chart"></div>
+      <div class="keyline" id="keyline"></div>
+    </section>
+    <section class="card" aria-label="Opportunity scores">
+      <div class="localnote" id="localnote" role="status"><span id="localtext">Edits you make here are saved in this browser only. Teammates won't see them.</span><button type="button" id="localexport">Export jobs file</button></div>
+      <div class="tscroll">
+        <table>
+          <thead><tr>
+            <th>#</th><th>Job</th>
+            <th class="num" title="Importance: % rating 4–5">Imp.</th><th class="num" title="Satisfaction: % rating 4–5">Sat.</th>
+            <th class="num"><button class="link" id="sort" type="button" title="Sort by score" style="font-size:11px;letter-spacing:.07em;text-transform:uppercase">Score ↓</button></th>
+            <th>Zone</th>
+          </tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <div class="tfoot"><span><span class="eg"></span> AI estimate</span><span><span class="eg firm"></span> your judgement or survey</span><span>Edit a value, ask Claude about it, or add survey data to measure it.</span></div>
+    </section>
+  </div>
+
+  <footer class="foot" id="foot"></footer>
+</div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const DATA = /*__LANDSCAPE_DATA__*/null;
+(function(){
+"use strict";
+const D = DATA || {title:"Opportunity map",study:"",jobs:[]};
+const R = Object.assign({tableStakesSat:85, underSatMin:80, underImpMin:90, solidOpp:10, highOpp:12}, D.rules||{});
+const ZONES = [
+  {k:"High opportunity",  short:"High",         v:"--z-high",   ink:"--z-high-ink"},
+  {k:"Solid opportunity", short:"Solid",        v:"--z-solid",  ink:"--z-solid-ink"},
+  {k:"Modest opportunity", short:"Modest",      v:"--z-under",  ink:"--z-under-ink"},
+  {k:"Table stakes",      short:"Table stakes", v:"--z-stakes", ink:"--z-stakes-ink"},
+  {k:"Served right",      short:"Served right", v:"--plot",     ink:"--ink"},
+  {k:"Over-served",       short:"Over-served",  v:"--z-over",   ink:"--z-over-ink"}
+];
+const STORE = "jtbd-landscape:" + (D.study || D.title);
+/* where each score came from (references/jobs-file.md): ai, evidence_update, judgement, survey */
+const NS = s => { s = String(s || "").trim().toLowerCase(); return ({"": "ai", edited: "judgement", "your judgement": "judgement", "evidence update": "evidence_update", "ai estimate": "ai"})[s] || s; };
+const SRC = {ai: "AI estimate", evidence_update: "evidence update", judgement: "your judgement", survey: "survey"};
+const isEst = j => j.source === "ai" || j.source === "evidence_update";
+function basedOn(list, who){ const c = {}; list.forEach(j => c[j.source] = (c[j.source] || 0) + 1);
+  return "Based on: " + ["ai", "judgement", "evidence_update", "survey"].filter(k => c[k]).map(k => c[k] + " " + (k === "judgement" && who === "team" ? "team judgement" : SRC[k]) + ((k === "ai" || k === "evidence_update") && c[k] !== 1 ? "s" : "")).join(" · "); }
+function trustNote(list){ const judged = list.filter(j => j.source === "judgement").length;
+  if (judged) return `${judged} score${judged === 1 ? " reflects" : "s reflect"} your team's view rather than customer evidence. Survey before deciding what to build.`;
+  if (list.length && list.every(j => j.source === "survey")) return "All scores are measured. Check the margins of error and any “zone could change” flags.";
+  return "Scores include AI estimates: good for choosing what to survey. Run the survey before deciding what to build."; }
+const LOGS = (D.logs || []);
+const splitL = v => String(v || "").split(/[;,\s]+/).filter(Boolean);
+const DECISIONS = LOGS.filter(g => g.field === "decision");
+const logsFor = j => LOGS.filter(g => g.field === "decision" ? splitL(g.label).includes(String(j.label)) : g.label === j.label);
+function decisionLine(){
+  const g = DECISIONS[DECISIONS.length - 1]; if (!g) return "";
+  const then = {}; String(g.zone_from || "").split(" | ").forEach(p => { const i = p.indexOf(":"); if (i > 0) then[p.slice(0, i).trim()] = p.slice(i + 1).split(" · ")[0].trim(); });
+  const moved = Object.keys(then).filter(L => { const j = byLabel(L); return j && zone(j.importance, j.satisfaction) !== then[L]; });
+  return `<span class="based">Decided ${esc(String(g.logged_at).slice(0, 10))}: ${esc(g.to)} (jobs ${esc(splitL(g.label).join(", "))}${g.evidence_ids ? "; " + splitL(g.evidence_ids).length + " quotes" : ""}).</span> ` +
+    moved.map(L => `Job ${esc(L)} has moved from ${esc(then[L])} to ${esc(zone(byLabel(L).importance, byLabel(L).satisfaction))} since. `).join("");
+}
+const WFIELDS = ["context", "barrier", "goal", "outcome"];
+const WLABEL = {context:"When", barrier:"But", goal:"Help me", outcome:"So"};
+const wordingEdited = j => WFIELDS.some(f => (j[f] || "") !== (j._orig[f] || ""));
+
+/* the skill's automatic statement checks (SKILL.md step 4, checks 1-4), run as you type */
+const SOLUTION = /\b(app|feature|button|chat|dashboard|portal|integration|notification|reminders?|automatic(ally)?|real[- ]time|documentation|api|plugin|widget|screen|tab)\b/i;
+const COMPANY = /\b(because (we|the company|our product) (is|are)n?'?t|our platform|marketplace|PDP|SKU|e2e)\b/i;
+function lintJob(j){
+  const out = [];
+  if (SOLUTION.test(j.goal || "")) out.push("The goal names a product or mechanism. Describe the need, not the solution.");
+  if (/\b(and|&)\b.*\b(also|chat|communicat)|\band\b.*\band\b/i.test(j.goal || "")) out.push("The goal may hold two needs. Split them by asking Claude.");
+  if (COMPANY.test([j.context, j.barrier, j.goal, j.outcome].join(" "))) out.push("This reads like company language. Use the customer's words.");
+  const same = jobs.filter(o => o !== j && (o.outcome || "").trim().toLowerCase() === (j.outcome || "").trim().toLowerCase() && (j.outcome || "").trim());
+  if (same.length) out.push(`The "so" part matches job ${same.map(o => o.label).join(", ")}. Make the outcome specific to this job.`);
+  return out;
+}
+
+/*ZONE-START*/
+const opp = (i,s) => i/10 + Math.max(i-s,0)/10;
+function zone(i,s){
+  const o = opp(i,s);
+  if (s > i) return "Over-served";
+  if (s > R.tableStakesSat) return "Table stakes";
+  if (s >= R.underSatMin && i >= R.underImpMin) return "Modest opportunity";
+  if (s < R.underSatMin && o > R.highOpp) return "High opportunity";
+  if (s < R.underSatMin && o >= R.solidOpp) return "Solid opportunity";
+  return "Served right";
+}
+/*ZONE-END*/
+const clamp = v => Math.max(0, Math.min(100, Math.round(Number(v)||0)));
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1) : "";
+const zinfo = z => ZONES.find(x => x.k === z);
+
+const jobs = D.jobs.map(j => Object.assign({}, j, {
+  label: String(j.label), importance: Number(j.importance), satisfaction: Number(j.satisfaction), source: NS(j.source),
+  _i: Number(j.importance), _s: Number(j.satisfaction), _src: NS(j.source),
+  _orig: Object.fromEntries(WFIELDS.map(f => [f, (j.original && j.original[f]) || j[f] || ""])),
+  _t0: Object.fromEntries(WFIELDS.map(f => [f, j[f] || ""])),
+  evidence: j.evidence || [], contradicts: j.contradicts || [],
+  base: j.survey_importance !== undefined && j.survey_importance !== "" && j.survey_importance !== null
+    ? {i: Number(j.survey_importance), s: Number(j.survey_satisfaction), src: "survey", n: j.n}
+    : {i: Number(j.importance), s: Number(j.satisfaction), src: NS(j.source), n: j.n},
+  history: [], unlocked: false
+}));
+const personas = [...new Set(jobs.map(j => j.persona || "Unassigned"))];
+let st = {zones: new Set(), sel: null, open: new Set()};
+try { const saved = JSON.parse(localStorage.getItem(STORE) || "null");
+  if (saved && saved.edits) for (const j of jobs) { const e = saved.edits[j.label]; if (e) { if (e.i !== undefined) { j.importance = e.i; j.satisfaction = e.s; j.source = NS(e.src); if (e.n) j.n = e.n; } if (e.t) Object.assign(j, e.t); if (e.h) j.history = e.h; if (e.b) j.base = e.b; if (e.u) j.unlocked = true; } }
+} catch(e) {}
+function persist(){
+  const edits = {};
+  for (const j of jobs) {
+    const e = {};
+    if (j.importance !== j._i || j.satisfaction !== j._s || j.source !== j._src) Object.assign(e, {i:j.importance, s:j.satisfaction, src:j.source, n:j.n});
+    if (WFIELDS.some(f => j[f] !== j._t0[f])) e.t = Object.fromEntries(WFIELDS.map(f => [f, j[f]]));
+    if (j.history.length) e.h = j.history;
+    if (j.base.src !== j._src || j.base.i !== j._i || j.base.s !== j._s) e.b = j.base;
+    if (j.unlocked) e.u = 1;
+    if (Object.keys(e).length) edits[j.label] = e;
+  }
+  try { localStorage.setItem(STORE, JSON.stringify({edits})); } catch(e) {}
+  updateLocalNote(Object.keys(edits).length);
+}
+function updateLocalNote(n){
+  const box = document.getElementById("localnote"), t = document.getElementById("localtext");
+  if (!box) return;
+  box.classList.toggle("dirty", n > 0);
+  t.textContent = n > 0
+    ? `${n} job${n === 1 ? "" : "s"} changed. Saved in this browser only: export the jobs file to keep your changes or share them.`
+    : "Edits you make here are saved in this browser only. Teammates won't see them.";
+}
+const byLabel = l => jobs.find(j => j.label === String(l));
+
+/* ---------- provenance: change history with reasons; survey scores locked ---------- */
+const locked = j => j.base.src === "survey" && !j.unlocked;
+const overrides = j => j.base.src === "survey" && j.source === "judgement";
+function record(j, kind, from, to, field){
+  const now = Date.now(), last = j.history[j.history.length - 1];
+  if (last && last.kind === kind && last.field === field && !last.reason && now - last.t < 120000) { last.to = to; last.t = now; }
+  else j.history.push({t: now, kind, field, from, to, reason: ""});
+  const cur = j.history[j.history.length - 1];
+  if (JSON.stringify(cur.from) === JSON.stringify(cur.to)) j.history.pop();
+  else st.ask = j.label;
+  persist();
+}
+const fmtT = t => { const d = new Date(t); return d.toISOString().slice(0, 10) + " " + d.toTimeString().slice(0, 5); };
+const describe = h => h.kind === "scores" ? `Scores ${h.from[0]}/${h.from[1]} → ${h.to[0]}/${h.to[1]} (${zinfo(zone(h.from[0], h.from[1])).short} → ${zinfo(zone(h.to[0], h.to[1])).short})`
+  : h.kind === "wording" ? `${WLABEL[h.field]}: “${h.from}” → “${h.to}”` : h.kind === "unlock" ? "Unlocked survey scores to override them"
+  : h.kind === "survey" ? `Survey results ${h.from[0]}/${h.from[1]} → ${h.to[0]}/${h.to[1]}` : h.kind;
+let order = [];
+function sortOrder(){ order = jobs.slice().sort((a,b) => opp(b.importance,b.satisfaction) - opp(a.importance,a.satisfaction)).map(j => j.label); }
+sortOrder();
+const shortName = j => { const g = cap(String(j.goal || "").replace(/^help me (to |by )?/i, "")); return g.length > 34 ? g.slice(0, 32).replace(/\s+\S*$/, "") + "…" : g; };
+
+/* ---------- palette ---------- */
+const TOKENS = /*__TOKENS_JSON__*/null;
+function palette(forExport){
+  if (forExport) { const t = TOKENS.light; return {bg:t.surface,plot:t.plot,ink:t.ink,muted:t.muted,faint:t.faint,line:t["line-strong"],accent:t.accent,
+    over:t["z-over"],stakes:t["z-stakes"],under:t["z-under"],solid:t["z-solid"],high:t["z-high"],dot:t.dot,dotInk:t["dot-ink"],estInk:t["est-ink"],warn:t["warn-ink"],overInk:t["z-over-ink"],stakesInk:t["z-stakes-ink"],underInk:t["z-under-ink"],solidInk:t["z-solid-ink"],highInk:t["z-high-ink"],font:"Helvetica, Arial, sans-serif"}; }
+  const cs = getComputedStyle(document.documentElement), g = n => cs.getPropertyValue(n).trim();
+  return {bg:g("--surface"),plot:g("--plot"),ink:g("--ink"),muted:g("--muted"),faint:g("--faint"),line:g("--line-strong"),accent:g("--accent"),
+    over:g("--z-over"),stakes:g("--z-stakes"),under:g("--z-under"),solid:g("--z-solid"),high:g("--z-high"),dot:g("--dot"),dotInk:g("--dot-ink"),estInk:g("--est-ink"),warn:g("--warn-ink"),overInk:g("--z-over-ink"),stakesInk:g("--z-stakes-ink"),underInk:g("--z-under-ink"),solidInk:g("--z-solid-ink"),highInk:g("--z-high-ink"),font:g("--f-body")};
+}
+
+/* ---------- chart: every region drawn from the same rules as zone() ---------- */
+/* The exported image carries its own key, so it can be read without the page. */
+function keyStrip(P, list, y0){
+  const fill = {"High opportunity":P.high,"Solid opportunity":P.solid,"Modest opportunity":P.under,"Table stakes":P.stakes,"Served right":P.plot,"Over-served":P.over};
+  const n = k => list.filter(j => zone(j.importance, j.satisfaction) === k).length;
+  const under = n("High opportunity") + n("Solid opportunity") + n("Modest opportunity");
+  const items = [{t:"Underserved", c:under, bold:true}].concat(ZONES.map(z => ({t:z.short, c:n(z.k), sw:fill[z.k]})));
+  const W = VB.w - VB.l - 8, w = it => (it.bold ? 7.1 : 6.4) * (it.t.length + String(it.c).length + 1) + (it.sw ? 18 : 0) + 20;
+  let o = "", x = VB.l, y = y0 + 14;
+  for (const it of items) {
+    if (x + w(it) > VB.l + W) { x = VB.l; y += 20; }
+    if (it.sw) o += `<rect x="${x}" y="${y-10}" width="12" height="12" rx="2.5" fill="${it.sw}" stroke="${P.line}"/>`;
+    o += `<text x="${x + (it.sw ? 18 : 0)}" y="${y}" font-size="12" ${it.bold ? `font-weight="700" fill="${P.underInk}"` : `fill="${P.ink}"`}>${esc(it.t)} <tspan fill="${P.muted}">${it.c}</tspan></text>`;
+    x += w(it);
+  }
+  y += 24; x = VB.l;
+  const marks = [];
+  marks.push([`<circle cx="7" cy="-4" r="6.5" fill="none" stroke="${P.estInk}" stroke-width="1.1" stroke-dasharray="2 2"/><circle cx="7" cy="-4" r="3.6" fill="${P.dot}"/>`, "Dashed ring = AI estimate from customer evidence"]);
+  marks.push([`<rect x="2" y="-9" width="10" height="10" rx="2" fill="${P.dot}"/>`, "Square = team judgement, not customer evidence"]);
+  marks.push([`<circle cx="7" cy="-4" r="5" fill="${P.dot}"/>`, "Plain = measured by survey"]);
+  for (const [g, t] of marks) { const ww = 20 + t.length * 5.9 + 24; if (x + ww > VB.l + W) { x = VB.l; y += 20; }
+    o += `<g transform="translate(${x} ${y})">${g}</g><text x="${x + 20}" y="${y}" font-size="11.5" fill="${P.muted}">${esc(t)}</text>`; x += ww; }
+  return o;
+}
+const VB = {w:640, h:520, l:48, r:112, t:12, b:50};   // right margin holds the Table stakes and Modest labels
+function chartSVG(P, opts){
+  opts = opts || {};
+  const subLines = String(opts.sub || "").split("\n"), top = opts.title ? 50 + 16 * subLines.length : 0, foot = opts.title ? 98 : 0, W = VB.w, H = VB.h + top + foot, pw = W - VB.l - VB.r, ph = VB.h - VB.t - VB.b;
+  const X = i => VB.l + i/100*pw, Y = s => top + VB.t + (100 - s)/100*ph;
+  const pts = a => a.map(p => X(p[0]).toFixed(1) + "," + Y(p[1]).toFixed(1)).join(" ");
+  const TS = R.tableStakesSat, US = R.underSatMin, UI = R.underImpMin;
+  const sAt = (o, i) => 2*i - 10*o;               // satisfaction on the score = o line (below the diagonal)
+  const iAt = (o, s) => (s + 10*o) / 2;           // importance on the score = o line
+  let o = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Opportunity map: importance against satisfaction, ${jobs.length} jobs" font-family="${esc(P.font)}">`;
+  o += `<rect x="0" y="0" width="${W}" height="${H}" fill="${P.bg}"/>`;
+  if (opts.title) o += `<text x="${VB.l}" y="28" font-size="17" font-weight="600" fill="${P.ink}">${esc(opts.title)}</text>${subLines.map((l, i) => `<text x="${VB.l}" y="${50 + 16 * i}" font-size="12" fill="${opts.warn && i === 0 ? P.warn : P.muted}">${esc(l)}</text>`).join("")}`;
+  // regions
+  o += `<rect x="${X(0)}" y="${Y(100)}" width="${pw}" height="${ph}" fill="${P.plot}"/>`;
+  o += `<polygon points="${pts([[0,0],[100,100],[0,100]])}" fill="${P.over}"/>`;
+  o += `<polygon points="${pts([[TS,TS],[100,100],[100,TS]])}" fill="${P.stakes}"/>`;
+  o += `<rect x="${X(UI)}" y="${Y(TS)}" width="${X(100)-X(UI)}" height="${Y(US)-Y(TS)}" fill="${P.under}"/>`;
+  o += `<polygon points="${pts([[iAt(R.solidOpp,0),0],[100,0],[100,US],[iAt(R.solidOpp,US),US]])}" fill="${P.solid}"/>`;
+  o += `<polygon points="${pts([[iAt(R.highOpp,0),0],[100,0],[100,Math.min(US,sAt(R.highOpp,100))],[iAt(R.highOpp,Math.min(US,sAt(R.highOpp,100))),Math.min(US,sAt(R.highOpp,100))]])}" fill="${P.high}"/>`;
+  // grid
+  for (let v = 0; v <= 100; v += 25) {
+    o += `<line x1="${X(v)}" y1="${Y(0)}" x2="${X(v)}" y2="${Y(100)}" stroke="${P.ink}" stroke-opacity=".07"/>`;
+    o += `<line x1="${X(0)}" y1="${Y(v)}" x2="${X(100)}" y2="${Y(v)}" stroke="${P.ink}" stroke-opacity=".07"/>`;
+    o += `<text x="${X(v)}" y="${Y(0)+18}" font-size="11" text-anchor="middle" fill="${P.faint}">${v}</text>`;
+    o += `<text x="${X(0)-8}" y="${Y(v)+4}" font-size="11" text-anchor="end" fill="${P.faint}">${v}</text>`;
+  }
+  // region boundaries, so neighbouring fills stay distinct on any screen
+  const edge = `stroke="${P.line}" stroke-width="1" fill="none"`;
+  o += `<line x1="${X(0)}" y1="${Y(0)}" x2="${X(100)}" y2="${Y(100)}" ${edge}/>`;
+  o += `<polyline points="${pts([[iAt(R.solidOpp,0),0],[iAt(R.solidOpp,US),US],[100,US]])}" ${edge}/>`;
+  o += `<polyline points="${pts([[UI,US],[UI,TS],[TS,TS],[100,TS]])}" ${edge}/>`;
+  o += `<rect x="${X(0)}" y="${Y(100)}" width="${pw}" height="${ph}" ${edge}/>`;
+  const lab = (x, y, t, fill, anchor, size) => `<text x="${X(x)}" y="${Y(y)}" font-size="${size || 13}" font-weight="700" text-anchor="${anchor || "start"}" fill="${fill}" pointer-events="none">${t}</text>`;
+  o += lab(4, 94, "Over-served", P.overInk) + lab(4, 3, "Served right", P.muted) + lab(98, 3, "Underserved", P.highInk, "end", 14);
+  // band labels run along each band: one point of satisfaction moves half a point of importance
+  const ang = -Math.atan2(ph, pw / 2) * 180 / Math.PI;
+  const band = (score, s0, t, fill) => { const i0 = iAt(score, s0); return `<text transform="translate(${X(i0).toFixed(1)} ${Y(s0).toFixed(1)}) rotate(${ang.toFixed(1)})" font-size="12" font-weight="700" fill="${fill}" pointer-events="none">${t}</text>`; };
+  o += band((R.solidOpp + R.highOpp) / 2 - 0.25, 4, "Solid opportunity", P.solidInk);
+  o += band(R.highOpp + 1.6, 4, "High opportunity", P.highInk);
+  // the two small zones are labelled outside the plot, with a leader line, so markers can't cover them
+  const side = (zx, zy, ly, lines, fill) => { const lx = X(100) + 14;
+    return `<polyline points="${X(zx).toFixed(1)},${Y(zy).toFixed(1)} ${(X(100) + 8).toFixed(1)},${ly.toFixed(1)} ${(lx - 3).toFixed(1)},${ly.toFixed(1)}" fill="none" stroke="${P.muted}" stroke-width="1" pointer-events="none"/>` +
+      lines.map((t, k) => `<text x="${lx}" y="${(ly + 4 + k * 15).toFixed(1)}" font-size="12.5" font-weight="700" fill="${fill}" pointer-events="none">${t}</text>`).join(""); };
+  o += side(97, (TS + 100) / 2 + 3, Y(97), ["Table stakes"], P.ink);
+  o += side(97, (TS + US) / 2, Y(TS) + 16, ["Modest", "opportunity"], P.underInk);
+  o += `<text x="${X(50)}" y="${Y(0)+38}" font-size="12" text-anchor="middle" fill="${P.muted}">Importance →</text>`;
+  o += `<text transform="translate(13 ${Y(50)}) rotate(-90)" font-size="12" text-anchor="middle" fill="${P.muted}">Satisfaction →</text>`;
+  // markers (references/score-sources.md): dashed ring = AI estimate (incl. evidence updates); square = your judgement; plain = survey.
+  // Selected is drawn last, in the accent; a judgement over a survey score gets a solid outer ring.
+  const list = (opts.jobs || jobs).filter(j => !st.zones.size || st.zones.has(zone(j.importance, j.satisfaction)) || opts.title);
+  // the exported image draws every job; on the page the selected one is drawn last, on top
+  const ordered = opts.title ? list : list.filter(j => j.label !== st.sel).concat(list.filter(j => j.label === st.sel));
+  // jobs with identical scores sit side by side so none is hidden (values and tooltips stay exact)
+  const same = {};
+  list.forEach(j => (same[j.importance + "," + j.satisfaction] = same[j.importance + "," + j.satisfaction] || []).push(j.label));
+  const dxOf = j => { const g = same[j.importance + "," + j.satisfaction]; return g.length < 2 ? 0 : (g.indexOf(j.label) - (g.length - 1) / 2) * 21; };
+  for (const j of ordered) {
+    const x = X(j.importance) + dxOf(j), y = Y(j.satisfaction), est = isEst(j), sel = j.label === st.sel && !opts.title;
+    const r = String(j.label).length > 2 ? 11 : 9.5;
+    const fill = sel ? P.accent : P.dot, ink = P.dotInk;
+    let g = "";
+    if (sel) g += `<circle cx="${x}" cy="${y}" r="${r+8}" fill="${P.accent}" fill-opacity=".18"/>`;
+    if (est) { const dark = zone(j.importance, j.satisfaction) === "High opportunity";
+      g += `<circle cx="${x}" cy="${y}" r="${r+3.5}" fill="none" stroke="${dark ? P.highInk : P.estInk}" stroke-width="1.25" stroke-dasharray="2.5 2.5"/>`; }
+    if (overrides(j)) g += `<rect x="${x-r-4.5}" y="${y-r-4.5}" width="${2*r+9}" height="${2*r+9}" rx="4" fill="none" stroke="${P.dot}" stroke-width="1.25"/>`;
+    g += j.source === "judgement"
+      ? `<rect x="${x-r+0.5}" y="${y-r+0.5}" width="${2*r-1}" height="${2*r-1}" rx="2.5" fill="${fill}" stroke="${P.bg}" stroke-width="${sel ? 3 : 1.75}"/>`
+      : `<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" stroke="${P.bg}" stroke-width="${sel ? 3 : 1.75}"/>`;
+    g += `<text x="${x}" y="${y+3.6}" font-size="10.5" font-weight="600" text-anchor="middle" fill="${ink}">${esc(j.label)}</text>`;
+    if (opts.title) { o += g; continue; }
+    o += `<g class="pt${sel ? " selpt" : ""}" data-l="${esc(j.label)}" tabindex="0" role="button" aria-label="${esc("Job " + j.label + ", " + shortName(j) + ": importance " + j.importance + ", satisfaction " + j.satisfaction + ", " + SRC[j.source] + (sel ? ". Drag or use arrow keys to change." : ". Select to edit."))}" style="cursor:${sel ? "grab" : "pointer"}">${g}<circle cx="${x}" cy="${y}" r="${r+6}" fill="transparent"/></g>`;
+  }
+  // tooltip for the selected point
+  const sj = !opts.title && st.sel && byLabel(st.sel);
+  if (sj && list.includes(sj)) {
+    const zNow = zinfo(zone(sj.importance, sj.satisfaction)).short, sc = opp(sj.importance, sj.satisfaction).toFixed(1);
+    const t = drag && st.dragFrom ? (st.dragFrom.zone === zNow ? `${zNow} · ${sc}` : `${st.dragFrom.zone} → ${zNow} · ${sc}`) : `${shortName(sj)} · ${sc}`;
+    const tw = Math.min(260, 14 + t.length * 6.4);
+    const x = X(sj.importance) + dxOf(sj), y = Y(sj.satisfaction);
+    const others = list.filter(o => o !== sj).map(o => [X(o.importance) + dxOf(o), Y(o.satisfaction)]);
+    const clampX = v => Math.max(VB.l + 2, Math.min(X(100) - tw - 2, v)), clampY = v => Math.max(Y(100) + 2, Math.min(Y(0) - 28, v));
+    const spots = [[x - tw / 2, y - 46], [x - tw / 2, y + 20], [x - tw - 22, y - 13], [x + 22, y - 13]].map(([a, b]) => [clampX(a), clampY(b)]);
+    const covers = ([a, b]) => others.filter(([px, py]) => px > a - 12 && px < a + tw + 12 && py > b - 12 && py < b + 38).length + (b < y && b + 26 > y - 12 && a < x && a + tw > x ? 9 : 0) + (b > y - 12 && b < y + 12 && a < x + 12 && a + tw > x - 12 ? 9 : 0);
+    const [left, ty] = spots.reduce((best, s) => covers(s) < covers(best) ? s : best, spots[0]);
+    o += `<g pointer-events="none"><rect x="${left}" y="${ty}" width="${tw}" height="26" rx="6" fill="${P.ink}"/><text x="${left + 9}" y="${ty + 17}" font-size="12" fill="${P.bg}">${esc(t)}</text></g>`;
+  }
+  if (opts.title) o += keyStrip(P, opts.jobs || jobs, top + VB.h + 4);
+  o += `</svg>`;
+  return {svg:o, top, foot, pw, ph};
+}
+
+let geom = null;
+const chartEl = document.getElementById("chart");
+function renderChart(){ renderKey(); const c = chartSVG(palette(false)); chartEl.innerHTML = c.svg; geom = c; }
+function renderKey(){
+  const est = jobs.some(isEst), judge = jobs.some(j => j.source === "judgement"), survey = jobs.some(j => j.source === "survey");
+  document.getElementById("keyline").innerHTML =
+    `<span><svg width="20" height="20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="none" stroke="var(--est-ink)" stroke-width="1.25" stroke-dasharray="2.5 2.5"/><circle cx="10" cy="10" r="5.5" fill="var(--dot)"/></svg>Dashed ring = AI estimate</span>` +
+    `<span><svg width="16" height="16" aria-hidden="true"><rect x="2.5" y="2.5" width="11" height="11" rx="2" fill="var(--dot)"/></svg>Square = your judgement: no customer evidence behind it</span>` +
+    `<span><svg width="16" height="16" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="var(--dot)"/></svg>Plain = survey${survey ? "" : `<span style="color:var(--muted)">&nbsp;(none yet: add survey data to replace estimates)</span>`}</span>` +
+    (jobs.some(overrides) ? `<span><svg width="20" height="20" aria-hidden="true"><rect x="1" y="1" width="18" height="18" rx="4" fill="none" stroke="var(--dot)" stroke-width="1.25"/><rect x="5" y="5" width="10" height="10" rx="2" fill="var(--dot)"/></svg>Your judgement over measured data</span>` : "") +
+    `<span>Select a point, then drag it or use the arrow keys. Survey scores are locked until you unlock them.</span>`;
+}
+
+/* drag + keyboard */
+let drag = null;
+function toData(evt){
+  const svg = chartEl.querySelector("svg"), pt = svg.createSVGPoint(); pt.x = evt.clientX; pt.y = evt.clientY;
+  const p = pt.matrixTransform(svg.getScreenCTM().inverse());
+  return {i: clamp((p.x - VB.l)/geom.pw*100), s: clamp(100 - (p.y - geom.top - VB.t)/geom.ph*100)};
+}
+chartEl.addEventListener("pointerdown", e => {
+  const g = e.target.closest(".pt"); if (!g) return;
+  const l = g.dataset.l, j = byLabel(l);
+  if (st.sel !== l) { select(l, false); return; }          // first tap or click selects; nothing moves
+  if (locked(j)) { toast("These are survey results. Open Details and unlock them to override."); return; }
+  e.preventDefault(); drag = l;
+  st.dragFrom = {i: j.importance, s: j.satisfaction, zone: zinfo(zone(j.importance, j.satisfaction)).short};
+  chartEl.setPointerCapture(e.pointerId);
+});
+chartEl.addEventListener("pointermove", e => { if (drag) { const d = toData(e); setScores(drag, d.i, d.s, {live:true}); } });
+const endDrag = () => {
+  if (!drag) return;
+  const l = drag, j = byLabel(l), f = st.dragFrom; drag = null; st.dragFrom = null;
+  if (f) record(j, "scores", [f.i, f.s], [j.importance, j.satisfaction]);
+  persist(); renderAll(); focusPoint(l);
+};
+chartEl.addEventListener("pointerup", endDrag); chartEl.addEventListener("pointercancel", endDrag);
+chartEl.addEventListener("keydown", e => {
+  const g = e.target.closest(".pt"); if (!g) return;
+  const j = byLabel(g.dataset.l), step = e.shiftKey ? 5 : 1;
+  const k = {ArrowRight:[step,0],ArrowLeft:[-step,0],ArrowUp:[0,step],ArrowDown:[0,-step]}[e.key];
+  if (k) {
+    e.preventDefault();
+    if (st.sel !== j.label) { select(j.label, false, true); focusPoint(j.label); return; }
+    if (locked(j)) { toast("These are survey results. Open Details and unlock them to override."); return; }
+    const from = [j.importance, j.satisfaction];
+    setScores(j.label, j.importance + k[0], j.satisfaction + k[1]);
+    record(j, "scores", from, [j.importance, j.satisfaction]); updateRow(j); focusPoint(j.label);
+  }
+  else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); select(j.label, true); focusPoint(j.label); }
+});
+function focusPoint(l){ const el = chartEl.querySelector(`.pt[data-l="${CSS.escape(String(l))}"]`); if (el) el.focus({preventScroll:true}); }
+
+function setScores(label, i, s, o){
+  o = o || {};
+  const j = byLabel(label); i = clamp(i); s = clamp(s);
+  if (i === j.importance && s === j.satisfaction) return;
+  j.importance = i; j.satisfaction = s;
+  j.source = (i === j.base.i && s === j.base.s) ? j.base.src : "judgement";
+  updateRow(j); renderChart();
+  if (!o.live) { persist(); renderLegend(); renderBanner(); }
+}
+
+/* ---------- table ---------- */
+const pillHTML = z => { const zi = zinfo(z); return `<span class="pill" style="background:var(${zi.v});color:var(${zi.ink});${z === "Served right" ? "border:1px solid var(--line-strong)" : ""}">${zi.short}</span>`; };
+function provHTML(j){
+  const why = `<button class="link" type="button" data-toggle="${esc(j.label)}" aria-expanded="${st.open.has(j.label)}">${st.open.has(j.label) ? "Hide details" : (j.source === "survey" ? "Details" : "Why these scores?")}</button>`;
+  let p = j.source === "ai" ? `<span class="tag">AI est.</span>` : j.source === "survey" ? `<span class="tag survey">Survey${j.n ? " · n = " + esc(j.n) : ""}</span>`
+    : j.source === "evidence_update" ? `<span class="tag">Updated from evidence</span>` : `<span class="tag judge" title="${esc(j.edit_reason || "You and Claude discussed it; no customer evidence behind it")}">Your judgement</span>`;
+  if (drag === j.label) p = `<span>Editing · dragged on chart</span>`;
+  let flag = "";
+  if (wordingEdited(j)) {
+    p += ` <span class="tag edited">Wording edited</span>`;
+    const msg = j.source === "survey" ? "Ratings were collected on the original wording" : "Wording changed after scoring: check the score and evidence still fit";
+    flag = `<span class="flag" title="${esc(msg)}">${j.source === "survey" ? "Ratings on old wording" : "Re-check scores"}</span>`;
+  } else if (j.flags && j.source === j._src) flag = `<span class="flag" title="${esc(j.flags)}">Check</span>`;
+  if (overrides(j)) p += ` <span class="tag override" title="Survey result: ${j.base.i}/${j.base.s}${j.base.n ? ", n = " + esc(j.base.n) : ""}">Your judgement over measured data</span>`;
+  const last = j.history[j.history.length - 1];
+  const ask = st.ask === j.label && last && !last.reason
+    ? `<span class="reason"><input type="text" data-reason="${esc(j.label)}" id="reason-${esc(j.label)}" aria-label="Reason for changing job ${esc(j.label)}" placeholder="Why did you change this? (optional, press Enter)"></span>` : "";
+  return p + why + flag + ask;
+}
+function rowHTML(j){
+  const z = zone(j.importance, j.satisfaction), open = st.open.has(j.label);
+  const stmt = [j.context, j.barrier, j.outcome].filter(Boolean).join(" · ");
+  let h = `<tr class="row${st.sel === j.label ? " sel" : ""}" data-l="${esc(j.label)}">
+    <td class="lab">${esc(j.label)}</td>
+    <td><div class="need" data-need>${esc(cap(j.goal))}</div><div class="stmt" data-stmt>${esc(stmt)}</div>
+      <div class="prov">${esc(j.persona || "Unassigned")}${j.stage ? " · " + esc(j.stage) : ""}</div>
+      <div class="prov" data-prov>${provHTML(j)}</div></td>
+    <td class="num"><input type="number" min="0" max="100" step="1" id="imp-${esc(j.label)}" aria-label="Importance for job ${esc(j.label)}" value="${j.importance}" class="${!isEst(j) ? "firm" : ""}"${locked(j) ? ' readonly title="Survey result. Unlock in Details to override."' : ""}></td>
+    <td class="num"><input type="number" min="0" max="100" step="1" id="sat-${esc(j.label)}" aria-label="Satisfaction for job ${esc(j.label)}" value="${j.satisfaction}" class="${!isEst(j) ? "firm" : ""}"${locked(j) ? ' readonly title="Survey result. Unlock in Details to override."' : ""}></td>
+    <td class="num score" data-score>${opp(j.importance, j.satisfaction).toFixed(1)}</td>
+    <td data-zone>${pillHTML(z)}</td>
+  </tr>`;
+  if (open) {
+    const li = a => a.length ? `<ul>${a.map(e => `<li><span class="qid">${esc(e.id)}</span> ${esc(e.text)}</li>`).join("")}</ul>` : `<p>None recorded.</p>`;
+    const list = s => `<ul>${String(s).split("; ").map(f => `<li>${esc(f)}</li>`).join("")}</ul>`;
+    const lint = lintJob(j);
+    const wf = f => `<label for="w-${f}-${esc(j.label)}">${WLABEL[f]}<input type="text" id="w-${f}-${esc(j.label)}" data-w="${f}" data-l="${esc(j.label)}" value="${esc(j[f] || "")}" class="${(j[f] || "") !== (j._orig[f] || "") ? "changed" : ""}">${(j[f] || "") !== (j._orig[f] || "") ? `<span class="orig">Original: ${esc(j._orig[f] || "(empty)")}</span>` : ""}</label>`;
+    h += `<tr class="det"><td></td><td colspan="5"><div class="detgrid">
+      <div class="wording"><h4 style="grid-column:1/-1;margin:0">Wording${wordingEdited(j) ? ` · edited <button class="link" type="button" data-wrestore="${esc(j.label)}">Restore original wording</button>` : ""}</h4>${WFIELDS.map(wf).join("")}
+      <div class="lint" id="lint-${esc(j.label)}" ${lint.length ? "" : "hidden"}>${lint.length ? `<ul>${lint.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}</div></div>
+      <div><h4>Importance ${j._i}${j.importance !== j._i ? " → " + j.importance : ""}</h4><p>${esc(j.importance_reason || (j.source === "survey" ? "From survey ratings." : "—"))}</p></div>
+      <div><h4>Satisfaction ${j._s}${j.satisfaction !== j._s ? " → " + j.satisfaction : ""}</h4><p>${esc(j.satisfaction_reason || (j.source === "survey" ? "From survey ratings." : "—"))}</p></div>
+      <div><h4>Evidence${j.confidence ? " · " + esc(j.confidence) : ""}</h4>${li(j.evidence)}</div>
+      <div><h4>Points the other way</h4>${li(j.contradicts)}</div>
+      ${j.flags ? `<div><h4>${j.source === j._src ? "Check before relying on it" : "Flags on the original scores"}</h4>${list(j.flags)}</div>` : ""}
+      ${j.persona_split ? `<div><h4>By persona</h4>${list(j.persona_split)}</div>` : ""}
+      <div style="grid-column:1/-1"><h4>History</h4>${logsFor(j).length ? `<ul class="hist">${logsFor(j).slice().reverse().map(g => g.field === "decision" ? `<li><span class="when">${esc(String(g.logged_at).slice(0, 16).replace("T", " "))}</span> <b>Decided:</b> ${esc(g.to)} (jobs ${esc(splitL(g.label).join(", "))})${g.reason ? ` · <i>${esc(g.reason)}</i>` : ""}</li>` : `<li><span class="when">${esc(String(g.logged_at).slice(0, 16).replace("T", " "))}</span> ${esc(g.field)} ${esc(g.from)} → ${esc(g.to)}${g.zone_from !== g.zone_to ? ` · <b>${esc(g.zone_from)} → ${esc(g.zone_to)}</b>` : ""} · ${esc(SRC[NS(g.source)] || g.source)}${g.reason ? ` · <i>${esc(g.reason)}</i>` : ""}${g.evidence_ids ? ` · ${esc(g.evidence_ids)}` : ""}</li>`).join("")}</ul>` : (j.edit_reason ? `<p>Earlier change: <i>${esc(j.edit_reason)}</i></p>` : "")}${j.history.length ? `<ul class="hist">${j.history.slice().reverse().map(h => `<li><span class="when">${fmtT(h.t)}</span> ${esc(describe(h))}${h.kind !== "unlock" ? (h.reason ? ` · <i>${esc(h.reason)}</i>` : ` · <span style="color:var(--muted)">no reason given</span>`) : ""}</li>`).join("")}</ul>` : (logsFor(j).length ? "" : `<p style="color:var(--muted)">No changes. ${j.source === "ai" ? "Scores are the AI estimates above." : j.source === "survey" ? "Scores are survey results." : ""}</p>`)}</div>
+    </div><p style="margin:12px 0 0;display:flex;gap:8px;flex-wrap:wrap">${(j.importance !== j.base.i || j.satisfaction !== j.base.s) ? `<button class="btn" type="button" data-revert="${esc(j.label)}">Restore ${j.base.src === "survey" ? "survey" : "original"} scores (${j.base.i} / ${j.base.s})</button>` : ""}${locked(j) ? `<button class="btn" type="button" data-unlock="${esc(j.label)}">Unlock to override survey scores</button>` : ""}</p></td></tr>`;
+  }
+  return h;
+}
+function renderTable(){
+  const rows = order.map(byLabel).filter(j => !st.zones.size || st.zones.has(zone(j.importance, j.satisfaction)));
+  document.getElementById("rows").innerHTML = rows.length ? rows.map(rowHTML).join("") : `<tr><td colspan="6" class="empty">No jobs in the selected zones. Click a zone in the legend again to clear it.</td></tr>`;
+}
+function updateRow(j){
+  const tr = document.querySelector(`tr.row[data-l="${CSS.escape(j.label)}"]`); if (!tr) return;
+  tr.querySelector("[data-score]").textContent = opp(j.importance, j.satisfaction).toFixed(1);
+  tr.querySelector("[data-zone]").innerHTML = pillHTML(zone(j.importance, j.satisfaction));
+  const pv = tr.querySelector("[data-prov]"), typing = st.ask === j.label && pv.contains(document.activeElement) && document.activeElement.dataset.reason;
+  if (!typing) pv.innerHTML = provHTML(j);
+  for (const [id, v] of [["imp-", j.importance], ["sat-", j.satisfaction]]) {
+    const inp = tr.querySelector("#" + CSS.escape(id + j.label));
+    if (document.activeElement !== inp) inp.value = v;
+    inp.classList.toggle("firm", !isEst(j));
+  }
+}
+const rowsEl = document.getElementById("rows");
+rowsEl.addEventListener("input", e => {
+  const t = e.target;
+  if (t.dataset && t.dataset.w) {
+    const j = byLabel(t.dataset.l), f = t.dataset.w; j[f] = t.value;
+    t.classList.toggle("changed", (j[f] || "") !== (j._orig[f] || ""));
+    const tr = document.querySelector(`tr.row[data-l="${CSS.escape(j.label)}"]`);
+    tr.querySelector("[data-need]").textContent = cap(j.goal);
+    tr.querySelector("[data-stmt]").textContent = [j.context, j.barrier, j.outcome].filter(Boolean).join(" · ");
+    tr.querySelector("[data-prov]").innerHTML = provHTML(j);
+    const lint = lintJob(j), box = document.getElementById("lint-" + j.label);
+    box.hidden = !lint.length; box.innerHTML = lint.length ? `<ul>${lint.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : "";
+    persist(); renderChart(); return;
+  }
+  if (t.type !== "number" || t.value === "" || t.readOnly) return;
+  const l = t.id.replace(/^(imp|sat)-/, ""), j = byLabel(l);
+  if (st.sel !== l) select(l, false, true);
+  if (t.id.startsWith("imp-")) setScores(l, t.value, j.satisfaction); else setScores(l, j.importance, t.value);
+});
+rowsEl.addEventListener("focusin", e => {
+  const t = e.target;
+  if (t.type === "number") { const j = byLabel(t.id.replace(/^(imp|sat)-/, "")); st.before = [j.importance, j.satisfaction]; }
+  if (t.dataset && t.dataset.w) st.beforeText = t.value;
+});
+rowsEl.addEventListener("change", e => {
+  const t = e.target;
+  if (t.type === "number") { t.value = clamp(t.value); const j = byLabel(t.id.replace(/^(imp|sat)-/, ""));
+    if (st.before) record(j, "scores", st.before, [j.importance, j.satisfaction]); st.before = [j.importance, j.satisfaction]; updateRow(j); }
+  if (t.dataset && t.dataset.w) { const j = byLabel(t.dataset.l); record(j, "wording", st.beforeText ?? "", t.value, t.dataset.w); st.beforeText = t.value; renderTable(); }
+});
+function saveReason(inp){
+  if (inp.dataset.saved) return; inp.dataset.saved = "1";
+  const j = byLabel(inp.dataset.reason), last = j.history[j.history.length - 1];
+  if (last && inp.value.trim()) last.reason = inp.value.trim();
+  st.ask = null; persist(); updateRow(j); if (st.open.has(j.label)) renderTable();
+  if (inp.value.trim()) toast("Reason saved");
+}
+rowsEl.addEventListener("keydown", e => { if (e.target.dataset && e.target.dataset.reason && e.key === "Enter") { e.preventDefault(); saveReason(e.target); } });
+rowsEl.addEventListener("focusout", e => { if (e.target.dataset && e.target.dataset.reason && e.target.value.trim()) saveReason(e.target); });
+rowsEl.addEventListener("click", e => {
+  const wr = e.target.closest("[data-wrestore]");
+  if (wr) { const j = byLabel(wr.dataset.wrestore); WFIELDS.forEach(f => j[f] = j._orig[f]); persist(); renderTable(); renderChart(); return; }
+  const tg = e.target.closest("[data-toggle]"), rv = e.target.closest("[data-revert]");
+  if (tg) { const l = tg.dataset.toggle; st.open.has(l) ? st.open.delete(l) : st.open.add(l); renderTable(); return; }
+  if (rv) { const j = byLabel(rv.dataset.revert), from = [j.importance, j.satisfaction];
+    j.importance = j.base.i; j.satisfaction = j.base.s; j.source = j.base.src; record(j, "scores", from, [j.importance, j.satisfaction]); renderAll(); return; }
+  const ul = e.target.closest("[data-unlock]");
+  if (ul) { const j = byLabel(ul.dataset.unlock); j.unlocked = true; j.history.push({t: Date.now(), kind: "unlock", from: null, to: null, reason: ""}); persist(); renderTable(); toast("Unlocked. Your changes will be marked as overriding the survey."); return; }
+  const tr = e.target.closest("tr.row"); if (tr && !e.target.closest("input,button")) select(tr.dataset.l, true);
+});
+function select(l, toggle, quiet){
+  st.sel = (toggle && st.sel === l && !drag) ? null : l;
+  document.querySelectorAll("tr.row").forEach(tr => tr.classList.toggle("sel", tr.dataset.l === st.sel));
+  renderChart();
+  if (!quiet && st.sel) { const tr = document.querySelector(`tr.row[data-l="${CSS.escape(st.sel)}"]`); if (tr) tr.scrollIntoView({block:"nearest"}); }
+}
+
+/* ---------- legend, banner, header ---------- */
+function renderLegend(){
+  const counts = Object.fromEntries(ZONES.map(z => [z.k, 0]));
+  jobs.forEach(j => counts[zone(j.importance, j.satisfaction)]++);
+  const btn = z => `<button class="lg" type="button" data-z="${z.k}" aria-pressed="${st.zones.has(z.k)}" title="Show only ${z.k}"><span class="sw" style="background:var(${z.v})"></span>${z.short}<span class="n">${counts[z.k]}</span></button>`;
+  const under = ZONES.slice(0, 3), rest = ZONES.slice(3), allOn = under.every(z => st.zones.has(z.k));
+  document.getElementById("legend").innerHTML =
+    `<span class="lgroup" role="group" aria-label="Underserved"><button class="glabel" type="button" data-group="under" aria-pressed="${allOn}" title="Show all underserved jobs">Underserved <span class="n">${under.reduce((a, z) => a + counts[z.k], 0)}</span></button>${under.map(btn).join("")}</span>` + rest.map(btn).join("");
+}
+document.getElementById("legend").addEventListener("click", e => {
+  const g = e.target.closest("[data-group]");
+  if (g) { const keys = ZONES.slice(0, 3).map(z => z.k), on = keys.every(k => st.zones.has(k)); keys.forEach(k => on ? st.zones.delete(k) : st.zones.add(k)); renderLegend(); renderChart(); renderTable(); return; }
+  const c = e.target.closest(".lg"); if (!c) return;
+  const z = c.dataset.z; st.zones.has(z) ? st.zones.delete(z) : st.zones.add(z);
+  renderLegend(); renderChart(); renderTable();
+});
+function renderBanner(){
+  const M = D.meta || {}, b = document.getElementById("banner");
+  document.getElementById("sub").textContent = (M.question ? M.question + " · " : "") + `${jobs.length} jobs · ${personas.length > 1 ? personas.join(", ") : personas[0]}` + (D.study ? " · " + D.study : "");
+  b.hidden = false;
+  const ai = jobs.filter(isEst).length;
+  document.getElementById("bannertext").innerHTML = `<span class="based">${esc(basedOn(jobs))}.</span>` +
+    (ai ? `Estimates come from what customers said in ${esc(D.sources_summary || "the research provided")} (dashed ring); they are not survey results. ` : "") +
+    esc(trustNote(jobs)) + (DECISIONS.length ? " " + decisionLine() : "") + (M.decision && !DECISIONS.length ? ` Your decision: ${esc(M.decision)}${/[.?!]$/.test(M.decision) ? "" : "."}` : "") +
+    (M.framing_note ? `<span class="skew"><b>Framing note:</b> ${esc(M.framing_note)}</span>` : "");
+}
+function renderAll(){ renderLegend(); renderBanner(); renderChart(); renderTable(); }
+
+/* ---------- export menu ---------- */
+const menu = document.getElementById("menu"), exportBtn = document.getElementById("export");
+function closeMenu(){ menu.hidden = true; exportBtn.setAttribute("aria-expanded", "false"); }
+exportBtn.addEventListener("click", () => { menu.hidden = !menu.hidden; exportBtn.setAttribute("aria-expanded", String(!menu.hidden)); if (!menu.hidden) menu.querySelector("button").focus(); });
+document.addEventListener("click", e => { if (!menu.hidden && !e.target.closest(".actions")) closeMenu(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !menu.hidden) { closeMenu(); exportBtn.focus(); } });
+menu.addEventListener("click", e => {
+  const b = e.target.closest("button[data-act]"); if (!b) return;
+  const a = b.dataset.act;
+  if (a === "reset") { resetAll(b); return; }
+  closeMenu();
+  ({png: exportPNG, xlsx: exportXLSX, csv: exportCSV, copy: copyChanges, report: copyRunReport})[a]();
+});
+
+let dlCap = null;
+const dlReady = (window.claude && window.claude.use) ? Promise.race([window.claude.use("downloads"), new Promise(r => setTimeout(() => r(null), 2500))]).then(d => (dlCap = d)).catch(() => null) : Promise.resolve(null);
+async function save(filename, blob){
+  await dlReady;
+  if (dlCap) {
+    try { await dlCap.save({filename, data: blob}); toast("Saved " + filename); }
+    catch (err) { if (err && err.code !== "declined") toast("Couldn't save " + filename + (err && err.message ? ": " + err.message : "")); }
+    return;
+  }
+  if (window.claude) { toast("Downloads aren't available in this view."); return; }
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = filename;
+  document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+const slug = s => String(s).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+const base = () => slug(D.title || "opportunity-map");
+
+function exportPNG(){
+  const ai = jobs.filter(j => j.source !== "survey").length;
+  const sub = `${basedOn(jobs, "team")} · ${new Date().toISOString().slice(0,10)}`;
+  const c = chartSVG(palette(true), {title: D.title || "Opportunity map", sub, warn: ai > 0, jobs});
+  const img = new Image(), url = URL.createObjectURL(new Blob([c.svg], {type:"image/svg+xml"}));
+  img.onload = () => {
+    const k = 2, cv = document.createElement("canvas"); cv.width = VB.w*k; cv.height = (VB.h + c.top + c.foot)*k;
+    const ctx = cv.getContext("2d"); ctx.scale(k, k); ctx.drawImage(img, 0, 0, VB.w, VB.h + c.top + c.foot); URL.revokeObjectURL(url);
+    cv.toBlob(b => save(base() + ".png", b), "image/png");
+  };
+  img.onerror = () => toast("Couldn't draw the chart image.");
+  img.src = url;
+}
+/* The CSV is a complete jobs file (references/jobs-file.md): it can be the next run's input as it is. */
+const COLS = ["schema_version","record_type","label","persona","stage","context","barrier","goal","outcome","importance","satisfaction","source","n","confidence","importance_reason","satisfaction_reason","evidence_ids","evidence","contradicts","provenance","edit_reason","survey_importance","survey_satisfaction","original_context","original_barrier","original_goal","original_outcome","logged_at","field","from","to","zone_from","zone_to","by","reason","version","opportunity","zone","wording_edited","overrides_survey","changes","last_change_reason"];
+/* page history -> decision log rows (references/jobs-file.md); one row per committed change */
+function pageLogRows(){
+  const out = [];
+  jobs.forEach(j => j.history.forEach(h => {
+    if (h.kind === "unlock") return;
+    const at = new Date(h.t).toISOString().replace(/\.\d+Z$/, "+00:00"), src = h.kind === "survey" ? "survey" : "judgement";
+    const base = {schema_version: "1.0", record_type: "log", label: j.label, logged_at: at, source: src, by: h.kind === "survey" ? "page" : "user", reason: h.reason || "", version: D.version || ""};
+    if (h.kind === "scores" || h.kind === "survey") {
+      const zf = zone(h.from[0], h.from[1]), zt = zone(h.to[0], h.to[1]);
+      if (h.from[0] !== h.to[0]) out.push(Object.assign({}, base, {field: h.kind === "survey" ? "survey" : "importance", from: h.from[0], to: h.to[0], zone_from: zf, zone_to: zt}));
+      if (h.from[1] !== h.to[1]) out.push(Object.assign({}, base, {field: h.kind === "survey" ? "survey" : "satisfaction", from: h.from[1], to: h.to[1], zone_from: zf, zone_to: zt}));
+    } else if (h.kind === "wording" && h.field) {
+      const z = zone(j.importance, j.satisfaction);
+      out.push(Object.assign({}, base, {field: h.field, from: h.from, to: h.to, zone_from: z, zone_to: z}));
+    }
+  }));
+  return out.sort((a, b) => a.logged_at < b.logged_at ? -1 : 1);
+}
+const evText = list => (list || []).map(e => e.id ? `${e.id}: ${e.text}` : e.text).join(" || ");
+function exportCSV(){
+  const q = v => { v = String(v ?? ""); return /[",\n]/.test(v) ? '"' + v.replace(/"/g,'""') + '"' : v; };
+  const lines = [COLS.join(",")];
+  for (const l of order) { const j = byLabel(l);
+    const we = wordingEdited(j), keepOrig = we || !!j.original, ov = overrides(j);
+    const reasons = [j.edit_reason].concat(j.history.filter(h => h.kind !== "unlock" && h.reason).map(h => h.reason)).filter(Boolean);
+    const r = Object.assign({}, j, {
+      schema_version: "1.0", record_type: "job",
+      persona: j.persona === "Unassigned" ? "" : j.persona,
+      evidence: evText(j.evidence), contradicts: evText(j.contradicts),
+      edit_reason: reasons.join("; "),
+      survey_importance: ov ? j.base.i : (j.survey_importance ?? ""), survey_satisfaction: ov ? j.base.s : (j.survey_satisfaction ?? ""),
+      opportunity: opp(j.importance,j.satisfaction).toFixed(2), zone: zone(j.importance,j.satisfaction), wording_edited: we ? "yes" : ""},
+      Object.fromEntries(WFIELDS.map(f => ["original_" + f, keepOrig ? j._orig[f] : ""])),
+      {overrides_survey: ov ? `yes (survey ${j.base.i}/${j.base.s})` : "", changes: j.history.length || "",
+       last_change_reason: (j.history.slice().reverse().find(h => h.reason) || {}).reason || ""});
+    lines.push(COLS.map(c => q(r[c])).join(",")); }
+  LOGS.map(g => Object.assign({schema_version: "1.0", record_type: "log"}, g)).concat(pageLogRows()).forEach(g => lines.push(COLS.map(c => q(g[c])).join(",")));
+  save(base() + "-jobs.csv", new Blob([lines.join("\n")], {type:"text/csv"}));
+}
+function exportXLSX(){
+  if (!window.XLSX) { toast("The spreadsheet library didn't load. Use the CSV instead."); return; }
+  const X = window.XLSX, wb = X.utils.book_new(), SRCX = {ai:"AI estimate", evidence_update:"Evidence update", judgement:"Your judgement", survey:"Survey"};
+  const head = ["Label","Persona","Stage","Context","Barrier","Goal","Outcome","Importance","Satisfaction","Opportunity score","Zone","Score source","n","Evidence confidence","Importance reason","Satisfaction reason","Original wording (if edited)"];
+  const rows = [head];
+  order.forEach(l => { const j = byLabel(l);
+    rows.push([j.label, j.persona, j.stage, j.context, j.barrier, j.goal, j.outcome, j.importance, j.satisfaction, null, null, (SRCX[j.source] || j.source) + (overrides(j) ? ` over measured data (survey ${j.base.i}/${j.base.s})` : ""), j.n || "", j.confidence || "", j.importance_reason || "", j.satisfaction_reason || "", wordingEdited(j) ? WFIELDS.map(f => j._orig[f]).join(" | ") : ""]); });
+  const ws = X.utils.aoa_to_sheet(rows);
+  for (let r = 2; r <= rows.length; r++) {
+    const j = byLabel(rows[r-1][0]), I = "H"+r, S = "I"+r, O = "J"+r;
+    ws[O] = {t:"n", v:+opp(j.importance,j.satisfaction).toFixed(2), f:`${I}/10+MAX(${I}-${S},0)/10`};
+    ws["K"+r] = {t:"s", v:zone(j.importance,j.satisfaction), f:`IF(${S}>${I},"Over-served",IF(${S}>Rules!$B$2,"Table stakes",IF(AND(${S}>=Rules!$B$3,${I}>=Rules!$B$4),"Modest opportunity",IF(AND(${S}<Rules!$B$3,${O}>Rules!$B$6),"High opportunity",IF(AND(${S}<Rules!$B$3,${O}>=Rules!$B$5),"Solid opportunity","Served right")))))`};
+  }
+  ws["!cols"] = [6,16,11,32,36,38,32,11,12,12,18,13,6,12,40,40,50].map(w => ({wch:w}));
+  ws["!autofilter"] = {ref:`A1:Q${rows.length}`};
+  X.utils.book_append_sheet(wb, ws, "Opportunity scores");
+  const ev = [["Label","Kind","Source ID","Excerpt"]];
+  jobs.forEach(j => { j.evidence.forEach(e => ev.push([j.label,"Supports",e.id,e.text])); j.contradicts.forEach(e => ev.push([j.label,"Points the other way",e.id,e.text])); });
+  const wse = X.utils.aoa_to_sheet(ev); wse["!cols"] = [{wch:6},{wch:20},{wch:10},{wch:90}];
+  X.utils.book_append_sheet(wb, wse, "Evidence");
+  const chg = [["When (UTC)","Job","Changed","From","To","Zone before","Zone after","Source","By","Reason"]];
+  LOGS.concat(pageLogRows()).forEach(g => chg.push([g.logged_at, g.label, g.field, g.from, g.to, g.zone_from, g.zone_to, g.field === "decision" ? "decision" : (SRCX[NS(g.source)] || g.source), g.by, g.reason || ""]));
+  if (chg.length === 1) chg.push(["", "", "No changes yet", "", "", "", "", "", "", ""]);
+  const wsc = X.utils.aoa_to_sheet(chg); wsc["!cols"] = [{wch:20},{wch:6},{wch:12},{wch:10},{wch:10},{wch:18},{wch:18},{wch:16},{wch:8},{wch:60}];
+  X.utils.book_append_sheet(wb, wsc, "Decision log");
+  const sv = [["Label","Persona","Importance question (1–5)","Satisfaction question (1–5)","Note"]];
+  jobs.forEach(j => sv.push([j.label, j.persona, `${cap(String(j.context||"").replace(/[,. ]+$/,""))}: ${cap(j.goal)}. How important is this to you?`, "How satisfied are you today with how well you can do this?",
+    wordingEdited(j) ? (j.source === "survey" ? "Wording edited after the survey; existing ratings used the original wording" : "Wording edited on the page") : ""]));
+  const wss = X.utils.aoa_to_sheet(sv); wss["!cols"] = [{wch:6},{wch:16},{wch:80},{wch:50},{wch:50}];
+  X.utils.book_append_sheet(wb, wss, "Survey");
+  const rl = [["Rule","Value","Meaning"],
+    ["Table stakes: satisfaction above", R.tableStakesSat, "Over-served is checked first (satisfaction > importance)"],
+    ["Modest opportunity: satisfaction from", R.underSatMin, "…up to the table-stakes value, with importance at least the next row"],
+    ["Modest opportunity: importance at least", R.underImpMin, ""],
+    ["Underserved", "", "The group of High, Solid and Modest opportunity"],
+    ["Solid opportunity: score from", R.solidOpp, "With satisfaction below the Modest minimum"],
+    ["High opportunity: score above", R.highOpp, "With satisfaction below the Modest minimum"],
+    ["Opportunity score (0–20)", "", "importance/10 + max(importance − satisfaction, 0)/10"]];
+  const wsr = X.utils.aoa_to_sheet(rl); wsr["!cols"] = [{wch:34},{wch:8},{wch:70}];
+  X.utils.book_append_sheet(wb, wsr, "Rules");
+  const out = X.write(wb, {bookType:"xlsx", type:"array"});
+  save(base() + "-opportunity-scores.xlsx", new Blob([out], {type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));
+}
+async function copyText(txt, okMsg){
+  try { await navigator.clipboard.writeText(txt); toast(okMsg); }
+  catch (e) { const ta = document.createElement("textarea"); ta.value = txt; ta.setAttribute("aria-label","Text to copy"); ta.style.cssText = "position:fixed;inset:20% 16px auto;height:40%;z-index:9;font:13px var(--f-mono)"; document.body.appendChild(ta); ta.select(); toast("Select the text and copy it."); ta.addEventListener("blur", () => ta.remove()); ta.focus(); }
+}
+/* Run report: counts only, never job wording, quotes, personas' names or scores of individual jobs. */
+function copyRunReport(){
+  const zc = {}; ZONES.forEach(z => zc[z.k] = 0); jobs.forEach(j => zc[zone(j.importance, j.satisfaction)]++);
+  const src = {ai: 0, evidence_update: 0, judgement: 0, survey: 0}; jobs.forEach(j => src[j.source] = (src[j.source] || 0) + 1);
+  const M = D.meta || {}, under = ["High opportunity","Solid opportunity","Modest opportunity"].reduce((a, k) => a + zc[k], 0);
+  const rescored = jobs.filter(j => j.importance !== j._i || j.satisfaction !== j._s).length, reworded = jobs.filter(wordingEdited).length;
+  const n = s => new Set(jobs.map(j => j[s]).filter(Boolean)).size;
+  const txt = [
+    "JTBD Opportunity Landscape run report (counts only, no customer content)",
+    `- Skill version: ${D.version || "unknown"}`,
+    `- Entry point: ${M.entry || "not recorded"}`,
+    `- Framing check: ${M.framing_note ? "kept original question (skew note shown)" : "passed or suggestion accepted"}`,
+    `- Sources cited as evidence: ${D.sources_summary}`,
+    `- Jobs: ${jobs.length} (${n("persona")} persona${n("persona") === 1 ? "" : "s"}, ${n("stage")} stages)`,
+    `- Zones: Underserved ${under} (${ZONES.slice(0, 3).map(z => z.short + " " + zc[z.k]).join(", ")}) · ${ZONES.slice(3).map(z => z.short + " " + zc[z.k]).join(" · ")}`,
+    `- Score sources: ${src.ai} AI estimates, ${src.evidence_update} evidence updates, ${src.judgement} your judgement, ${src.survey} survey; ${jobs.filter(overrides).length} judgement over survey`,
+    `- Decision log: ${LOGS.length + pageLogRows().length} entries`,
+    `- Corrections on the page: ${rescored} re-scored, ${reworded} reworded`,
+    "",
+    "Please fill in (all optional):",
+    "- AI tool and model:",
+    "- Study size (interviews, tickets; words if you know):",
+    "- Changes at checkpoint 1 and 2 (e.g. 11 draft jobs to 9):",
+    "- Minutes from inputs to map:",
+    "- Of the skill's top 5 jobs, how many are in your own top 5:",
+    "- Did the team decide? Was it based on an underserved job?",
+    "- Was install the hardest part? Was handing edits back painful? Did the team decide together? Will you repeat the study?",
+    "- What did you need to do next?",
+    "- What was wrong or missing:",
+    "",
+    "Counts only. Don't add your research question, company name, job wording or quotes."
+  ].join("\n");
+  copyText(txt, "Copied. Paste it into a run-report issue.");
+}
+async function copyChanges(){
+  const sc = jobs.filter(j => j.importance !== j._i || j.satisfaction !== j._s), wd = jobs.filter(wordingEdited);
+  if (!sc.length && !wd.length) { toast("No changes yet. Edit a score or wording first."); return; }
+  let lines = [];
+  if (sc.length) lines = lines.concat([`Score changes for ${D.title || "the map"}:`], sc.map(j =>
+    `- #${j.label} (${j.persona}) "${j._orig.goal}": importance ${j._i} → ${j.importance}, satisfaction ${j._s} → ${j.satisfaction}; zone ${zone(j._i,j._s)} → ${zone(j.importance,j.satisfaction)}${j.source === "survey" ? " (survey" + (j.n ? ", n = " + j.n : "") + ")" : ""}${overrides(j) ? " (overrides survey " + j.base.i + "/" + j.base.s + ")" : ""}` +
+    (j.history.filter(h => h.kind === "scores" && h.reason).map(h => `\n    reason: ${h.reason}`).join(""))));
+  if (wd.length) lines = lines.concat([(sc.length ? "\n" : "") + "Wording changes (please re-check that the evidence and scores still fit, and re-run the statement checks):"], wd.flatMap(j =>
+    [`- #${j.label} (${j.persona})`].concat(WFIELDS.filter(f => (j[f] || "") !== (j._orig[f] || "")).map(f => `    ${f}: "${j._orig[f]}" → "${j[f]}"`),
+      j.history.filter(h => h.kind === "wording" && h.reason).map(h => `    reason: ${h.reason}`))));
+  const txt = lines.join("\n");
+  try { await navigator.clipboard.writeText(txt); toast("Copied. Paste it into your chat with Claude."); }
+  catch (e) { const ta = document.createElement("textarea"); ta.value = txt; ta.setAttribute("aria-label","Changes to copy"); ta.style.cssText = "position:fixed;inset:20% 16px auto;height:40%;z-index:9;font:13px var(--f-mono)"; document.body.appendChild(ta); ta.select(); toast("Select the text and copy it."); ta.addEventListener("blur", () => ta.remove()); ta.focus(); }
+}
+
+/* CSV import: edited CSV (Import edited CSV) or survey results (Add survey data) */
+function parseCSV(t){
+  const out = []; let row = [], f = "", q = false;
+  for (let i = 0; i < t.length; i++) { const c = t[i];
+    if (q) { if (c === '"') { if (t[i+1] === '"') { f += '"'; i++; } else q = false; } else f += c; }
+    else if (c === '"') q = true; else if (c === ",") { row.push(f); f = ""; }
+    else if (c === "\n" || c === "\r") { if (c === "\r" && t[i+1] === "\n") i++; row.push(f); out.push(row); row = []; f = ""; }
+    else f += c; }
+  if (f || row.length) { row.push(f); out.push(row); }
+  return out.filter(r => r.some(x => x.trim()));
+}
+function importCSV(file, asSurvey){
+  const fr = new FileReader();
+  fr.onload = () => {
+    const rows = parseCSV(String(fr.result)); const h = (rows.shift() || []).map(x => x.trim().toLowerCase());
+    const rt = h.indexOf("record_type"); if (rt >= 0) for (let k = rows.length - 1; k >= 0; k--) if ((rows[k][rt] || "job").trim() !== "job") rows.splice(k, 1);
+    const col = n => h.indexOf(n), li = col("label") >= 0 ? col("label") : col("id"), ii = col("importance"), si = col("satisfaction"), sr = col("source"), ni = col("n");
+    if (li < 0 || ii < 0 || si < 0) { toast("That file needs label, importance and satisfaction columns (% rating 4–5)."); return; }
+    let n = 0;
+    rows.forEach(r => { const j = byLabel((r[li]||"").trim()); if (!j || r[ii] === undefined || r[ii] === "") return;
+      j.importance = clamp(r[ii]); j.satisfaction = clamp(r[si]);
+      if (ni >= 0 && r[ni]) j.n = r[ni].trim();
+      const s = sr >= 0 ? (r[sr]||"").trim().toLowerCase() : "";
+      const from = [j.base.i, j.base.s];
+      if (asSurvey || s.startsWith("survey")) { j.source = "survey"; j.base = {i: j.importance, s: j.satisfaction, src: "survey", n: j.n}; j.unlocked = false;
+        j.history.push({t: Date.now(), kind: "survey", from, to: [j.importance, j.satisfaction], reason: "Survey results imported" + (j.n ? " (n = " + j.n + ")" : "")}); }
+      else { j.source = (j.importance === j.base.i && j.satisfaction === j.base.s) ? j.base.src : (["evidence_update", "judgement"].includes(NS(s)) ? NS(s) : "judgement"); }
+      if (!asSurvey) WFIELDS.forEach(f => { const c = col(f); if (c >= 0 && r[c] !== undefined && r[c].trim()) j[f] = r[c].trim(); });
+      n++; });
+    persist(); renderAll(); toast(`Updated ${n} job${n === 1 ? "" : "s"} from ${file.name}${asSurvey ? " as survey results" : ""}`);
+  };
+  fr.readAsText(file);
+}
+document.getElementById("import").addEventListener("change", e => { closeMenu(); const f = e.target.files[0]; if (f) importCSV(f, false); e.target.value = ""; });
+document.getElementById("survey").addEventListener("change", e => { const f = e.target.files[0]; if (f) importCSV(f, true); e.target.value = ""; });
+
+/* reset: two-step, no dialogs */
+let armed = null;
+function resetAll(btn){
+  if (!armed) { btn.textContent = "Click again to restore all"; armed = setTimeout(() => { btn.textContent = "Restore original scores and wording"; armed = null; }, 3000); return; }
+  clearTimeout(armed); armed = null; btn.textContent = "Restore original scores and wording"; closeMenu();
+  jobs.forEach(j => { j.importance = j._i; j.satisfaction = j._s; j.source = j._src; WFIELDS.forEach(f => j[f] = j._t0[f]);
+    j.history = []; j.unlocked = false; j.base = {i: j._i, s: j._s, src: j._src, n: j.n}; });
+  try { localStorage.removeItem(STORE); } catch(e) {}
+  renderAll(); toast("All scores restored");
+}
+
+let tt = null;
+function toast(m){ const t = document.getElementById("toast"); t.textContent = m; t.hidden = false; clearTimeout(tt); tt = setTimeout(() => t.hidden = true, 2600); }
+document.getElementById("sort").addEventListener("click", () => { sortOrder(); renderTable(); toast("Sorted by score"); });
+
+document.getElementById("title").textContent = D.title || "Opportunity map";
+document.getElementById("foot").innerHTML = `<div>Score (0–20) = importance/10 + max(importance − satisfaction, 0)/10, with importance and satisfaction as the % of people rating 4–5. Zones, checked in order: Over-served (satisfaction &gt; importance), Table stakes (satisfaction &gt; ${R.tableStakesSat}), Modest (satisfaction ${R.underSatMin}–${R.tableStakesSat} and importance ≥ ${R.underImpMin}), High (satisfaction &lt; ${R.underSatMin}, score &gt; ${R.highOpp}), Solid (satisfaction &lt; ${R.underSatMin}, score ${R.solidOpp}–${R.highOpp}), otherwise Served right. High, Solid and Modest together are Underserved.</div><div>Edits stay in this browser${D.generated ? " · generated " + esc(D.generated) : ""}. Export the chart or spreadsheet to share.</div>`;
+window.matchMedia && matchMedia("(prefers-color-scheme: dark)").addEventListener && matchMedia("(prefers-color-scheme: dark)").addEventListener("change", renderChart);
+new MutationObserver(renderChart).observe(document.documentElement, {attributes:true, attributeFilter:["data-theme"]});
+renderAll();
+updateLocalNote(jobs.filter(j => j.history.length || wordingEdited(j) || j.importance !== j._i || j.satisfaction !== j._s).length);
+document.getElementById("localexport").addEventListener("click", () => exportCSV());
+})();
+</script>

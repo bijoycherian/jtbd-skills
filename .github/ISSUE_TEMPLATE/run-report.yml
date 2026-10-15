@@ -1,0 +1,41 @@
+name: Run report
+description: Tell us how a run went. Counts only, never customer content.
+title: "Run report: "
+labels: ["run-report"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        On the landscape page, open **Export → Copy run report** and paste it below. It holds counts
+        only. Please don't paste job wording, quotes, persona names or company names.
+  - type: textarea
+    id: report
+    attributes:
+      label: Run report from the page
+      render: text
+    validations:
+      required: true
+  - type: input
+    id: tool
+    attributes:
+      label: AI tool and model
+      placeholder: e.g. Claude Code with the default model
+    validations:
+      required: true
+  - type: input
+    id: minutes
+    attributes:
+      label: Minutes from inputs to landscape
+    validations:
+      required: true
+  - type: dropdown
+    id: top5
+    attributes:
+      label: Of the skill's top 5 jobs, how many are in your own top 5?
+      options: ["5", "4", "3", "2", "1", "0", "I don't have my own list"]
+    validations:
+      required: true
+  - type: textarea
+    id: wrong
+    attributes:
+      label: What was wrong or missing

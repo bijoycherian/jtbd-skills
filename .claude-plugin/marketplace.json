@@ -1,0 +1,14 @@
+{
+  "name": "jtbd-research-skills",
+  "description": "JTBD agent skills for product discovery",
+  "owner": {
+    "name": "Bijoy Cherian"
+  },
+  "plugins": [
+    {
+      "name": "jtbd-skills",
+      "source": "./",
+      "description": "Understand your customers deeply. JTBD Opportunity Landscape turns customer interviews into ranked jobs to be done, with the quotes behind each one. AI estimates are labelled, and you can challenge any score or refine a job before deciding what to build."
+    }
+  ]
+}

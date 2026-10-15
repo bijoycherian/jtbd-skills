@@ -1,0 +1,4 @@
+# Python 3.9 or later. Both are needed for the full set of outputs; without them the
+# ranked CSV and the interactive page are still built, and the run says what's missing.
+openpyxl>=3.1   # scoring spreadsheet (.xlsx)
+matplotlib>=3.7 # chart image (.png)
