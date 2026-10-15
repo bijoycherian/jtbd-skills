@@ -43,8 +43,6 @@ Those answers frame the work. The workflow then moves through five stages:
 4. **Validate.** Use the pre-filled survey to collect customer ratings and replace estimated scores.
 5. **Decide.** You choose where to focus. Decisions recorded in the workflow link back to supporting quotes, and changes to job scores are logged.
 
-See a full run, step by step, in the [example run](docs/example-run.md).
-
 ## What you get
 
 An editable opportunity map. Open a job to see its supporting evidence.
