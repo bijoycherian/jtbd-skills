@@ -61,6 +61,8 @@ Each score is labelled as an initial AI estimate, an AI estimate revised using c
 4. Start a new chat and type `/jtbd`.
 5. Attach your research—transcripts, tickets, or notes—and say what you want to learn and what decision it will inform. Using real customer data? Read [Data and privacy](#data-and-privacy) first.
 
+<img width="2030" height="744" alt="image" src="https://github.com/user-attachments/assets/6144760f-6959-4070-9010-a1dacd62bf70" />
+
 **Claude Code**
 
 ```bash
