@@ -81,7 +81,7 @@ Then type `/jtbd-skills:jtbd` and point it at your research folder, for example 
 
 - **Research connectors:** bring evidence in from tools such as Granola, Zoom and Dovetail via MCP.
 - **Jobs by customer group:** compare which jobs matter most to each group.
-- **Web app:** a shared workspace to save your research, jobs and opportunity maps, review evidence together, and refine priorities as new evidence comes in.
+- **Shared workspace:** save your research, jobs and opportunity maps, review evidence together, and refine priorities as new evidence comes in.
 - **Agent-assisted interviews:** explore how an agent could reconstruct the circumstances behind a customer’s decision—what prompted them to act, what they tried, and what progress they wanted to make.
 
 Try it with the research you already have. I’d love to hear where the job list or ranking didn’t match your reading of the evidence. [Open an issue](../../issues/new) with an example.
