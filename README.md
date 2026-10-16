@@ -81,7 +81,6 @@ Then type `/jtbd-skills:jtbd` and point it at your research folder, for example 
 
 - **Research connectors:** bring evidence in from tools such as Granola, Zoom and Dovetail via MCP.
 - **Jobs by customer group:** compare which jobs matter most to each group.
-- **Audio and video input:** start with recordings rather than uploading transcripts.
 - **Web app:** a shared workspace to save your research, jobs and opportunity maps, review evidence together, and refine priorities as new evidence comes in.
 - **Agent-assisted interviews:** explore how an agent could reconstruct the circumstances behind a customer’s decision—what prompted them to act, what they tried, and what progress they wanted to make.
 
