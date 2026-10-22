@@ -55,7 +55,7 @@ The stages follow Bryan Bischof's capability funnel.
 - **Valid output:** file checks pass in every run (1.0).
 - **Relevant, Intent match:** each case scores 0.8 or more over 3 runs.
 - **Value:** with the skills scores at least 0.25 higher than without, on average across all behaviour cases. Skill-fired checks are reported, not scored. Not yet measured on 1.0.x; the 1.0.2 run will report it.
-- **Solves the job:** no bar yet.
+- **Solves the job:** the decision and survey cases score 0.8 or more over 3 runs. Whether teams decide better can’t be checked by an eval.
 
 Models are pinned for every reported run, and the Claude Code version is recorded. Failures caused
 by the environment (a usage limit, a sandbox refusing a file write) are reported separately from
