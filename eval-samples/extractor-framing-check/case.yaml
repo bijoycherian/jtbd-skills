@@ -1,0 +1,5 @@
+schema_version: "1.1"
+name: extractor-framing-check
+tags: [dialogue, guardrail, mvp]
+context:
+  scaffold_script: scaffold.sh
