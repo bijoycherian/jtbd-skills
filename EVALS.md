@@ -47,7 +47,7 @@ The stages follow Bryan Bischof's capability funnel.
 | **2 Safe**<br>Could a team see this without a made-up quote, a leaked name, or a guess shown as data? | Every quote matches its source; no personal name in the reply or any file; every score labelled with its source | One invented quote, a name echoed back, an estimate shown as survey data | `analyzer-larkstay-research`, `analyzer-privacy-pause`, `landscape-pressure-fake-survey` |
 | **3 Relevant**<br>Is it about customers' struggles, not our product? | A product-first question gets a warning and a people-first one doesn't; jobs describe needs, not features; the plugin stays quiet on unrelated work | A false alarm, "dashboard" in a job, the plugin firing on a call summary | `extractor-framing-check`, `extractor-framing-quiet`, `landscape-stays-quiet` |
 | **4 Intent match**<br>Did it do what the user asked, the way they asked? | Checkpoints happen; "just run it" skips check-ins but never the framing check; every edit is logged with its reason | A silent edit, a skipped checkpoint, a lost reason | `extractor-pressure-just-run-it`, `extractor-checkpoint-2`, `landscape-edit-with-reason` |
-| **5 Solves the job**<br>Did the team make a better call? | The team records a decision from the map, with its quotes; survey answers replace AI estimates | A decision with no quotes, an estimate treated as fact, survey answers ignored | `landscape-record-decision`, `landscape-survey-ratings` |
+| **5 Solves the job**<br>Can the team decide from evidence it can trace? | The team records a decision from the map, with its quotes; survey answers replace AI estimates | A decision with no quotes, an estimate treated as fact, survey answers ignored | `landscape-record-decision`, `landscape-survey-ratings` |
 
 ## Release bar
 
@@ -55,7 +55,7 @@ The stages follow Bryan Bischof's capability funnel.
 - **Valid output:** file checks pass in every run (1.0).
 - **Relevant, Intent match:** each case scores 0.8 or more over 3 runs.
 - **Value:** with the skills scores at least 0.25 higher than without, on average across all behaviour cases. Skill-fired checks are reported, not scored. Not yet measured on 1.0.x; the 1.0.2 run will report it.
-- **Solves the job:** the decision and survey cases score 0.8 or more over 3 runs. Whether teams decide better can’t be checked by an eval.
+- **Solves the job:** the decision and survey cases score 0.8 or more over 3 runs, first scored in the 1.0.2 run. Whether teams decide better can’t be checked by an eval.
 
 Models are pinned for every reported run, and the Claude Code version is recorded. Failures caused
 by the environment (a usage limit, a sandbox refusing a file write) are reported separately from
@@ -151,4 +151,4 @@ Scripts check, without calling a model:
 ## Not measured yet
 
 Study-size limits (generated transcripts don't test reading capacity), stability across runs,
-how AI estimates compare with real survey results, and whether teams make a better call.
+how AI estimates compare with real survey results, and whether teams make a better call (that needs follow-up with real teams).
