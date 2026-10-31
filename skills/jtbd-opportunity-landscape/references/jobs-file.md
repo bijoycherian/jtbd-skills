@@ -3,7 +3,8 @@
 One file carries the jobs, their decision log and the last calibration, so the team's
 history travels with the jobs into the next study. The JTBD Extractor writes it; the
 Opportunity Landscape scores it, logs every change to it, and the map page exports it.
-`jtbd_files.py validate jobs.csv --evidence evidence.csv` checks it.
+`jtbd_files.py validate jobs.csv --evidence evidence.csv` checks it. Before scoring (the
+Extractor's hand-over), add `--unscored`: importance and satisfaction may then be blank.
 
 The JTBD Extractor and the Opportunity Landscape carry identical copies of this file.
 

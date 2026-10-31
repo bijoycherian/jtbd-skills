@@ -28,6 +28,18 @@ When a check fails, the question becomes the decision, and the user sees three o
 > • your own wording: I'll use that instead
 > • keep mine: use your original question (the results will note that they focus on your products)"
 
+With a question card, the explanation above stays in the message and the card asks the same
+choice on its own:
+
+> **Which question should the study answer?**
+> 1. **Guest question (Recommended):** "Where do guests struggle to make their stay fit around their travel plans?"
+> 2. **Keep mine:** "Which guest revenue product should we fund?" Results will note it's about the product, not guests.
+
+The card question is fixed. The first option holds the suggested question in full, word for word,
+named for the people it's about; the second holds the user's own request. Never write "see the
+message above" or "rather than…" in the card, and never shorten either question. "Something
+else" on the card is the user's own wording.
+
 | Reply | What happens |
 |---|---|
 | **yes** | The suggested question drives the study; the product question is the decision |
@@ -49,13 +61,14 @@ file stores them as the core job, `persona` and `stage`.
 > "Here's how I'd frame the study.
 > Main goal: Make my stay fit around my travel plans (412 quotes).
 > Who: business travellers (198), leisure guests (151), families (31; few quotes, so treat with care).
-> When: booking, before arrival, arrival, the stay, departure.
+> When: booking (64), before arrival (88), arrival (121), the stay (97), departure (42).
 > Reply 'ok', or tell me what to change, for example: 'split business travellers by trip length'."
 
 - **Main goal:** the core job, in the customer's words, solution-free.
 - **Who:** 1–4 personas from speaker roles and stories. Staff (front desk, support) are evidence
   about customers, not a persona. Flag any persona with few quotes.
-- **When:** 3–8 stages in the order the job happens, named in the study's own terms.
+- **When:** 3–8 stages in the order the job happens, named in the study's own terms, each with
+  its quote count.
 
 Write nothing further until the user replies. Any reply that confirms or corrects counts.
 

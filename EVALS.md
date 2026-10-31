@@ -2,8 +2,8 @@
 
 What we promise, what "good" means at each stage, the bar a release must clear, and the headline
 results. The tiers follow [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills/tree/main/evals),
-plus a scoring tier of our own (Tier 0), because zones must never vary between runs. Three of the behaviour cases are published in [`eval-samples/`](eval-samples/) so you can see,
-and run, how they work; the other 25 of the 28 cases stay in the development repo.
+plus a scoring tier of our own (Tier 0), because zones must never vary between runs. Four of the behaviour cases are published in [`eval-samples/`](eval-samples/) so you can see,
+and run, how they work; the other 25 of the 29 cases stay in the development repo.
 
 ## What we promise
 
@@ -49,6 +49,8 @@ The stages follow Bryan Bischof's capability funnel.
 | **4 Intent match**<br>Did it do what the user asked, the way they asked? | Checkpoints happen; "just run it" skips check-ins but never the framing check; every edit is logged with its reason | A silent edit, a skipped checkpoint, a lost reason | `extractor-pressure-just-run-it`, `extractor-checkpoint-2`, `landscape-edit-with-reason` |
 | **5 Solves the job**<br>Can the team decide from evidence it can trace? | The team records a decision from the map, with its quotes; survey answers replace AI estimates | A decision with no quotes, an estimate treated as fact, survey answers ignored | `landscape-record-decision`, `landscape-survey-ratings` |
 
+Only the cases in `eval-samples/` are public; the others are in the development repo.
+
 ## Release bar
 
 - **Safe:** every grader in every Safe case passes in all 3 runs, scored even when an earlier stage broke. Any miss blocks the release.
@@ -81,14 +83,16 @@ shows in the cases that need checked quotes, scripted scores and a logged histor
 
 ## Sample cases
 
-[`eval-samples/`](eval-samples/) holds three cases, each with its prompt and graders. They use the
-fictional Larkstay study in [`examples/larkstay/`](examples/larkstay/).
+[`eval-samples/`](eval-samples/) holds four cases, each with its prompt and graders. Three use the
+fictional Larkstay study in [`examples/larkstay/`](examples/larkstay/); the website case brings its own
+fictional saved pages (KeyHarbor), since evals run without web access.
 
 | Case | Stage | What it checks |
 |---|---|---|
 | `analyzer-larkstay-research` | Valid output, Safe | The privacy check runs first, every quote is checked by script, an unreadable PDF is reported, an interview with nothing relevant is listed |
 | `extractor-framing-check` | Relevant | A question about the product is flagged, the product question isn't lost, and three choices are offered (yes recommended, own wording, keep mine) |
 | `landscape-stays-quiet` | Relevant | A plain call summary: the plugin doesn't fire, with or without the skills |
+| `router-url-evidence-is-in` | Valid output, Relevant | `/jtbd` with a website: no framing card for a bare website, every quote is checked by script, "Evidence is in" gives the skew caveat, and the company's own pages aren't counted as customer voice |
 
 Graders come in three kinds used here: `tool_used` (a tool was or wasn't called, optionally matching its
 input), `file_exists`, and `llm` (a judge with written PASS and FAIL lines). Each judge grader checks one thing. One of the framing case's three:

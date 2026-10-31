@@ -34,8 +34,9 @@ each source for personal data before reading it." Recordings: ask
 for the transcript the meeting tool produced; never guess content from a file name.
 
 Give every source a stable ID if it doesn't have one: `INT-01` interviews, `FD-01` staff
-interviews, `SUP-118` tickets, `FUN-01` funnel or analytics notes, `DOC-01` internal
-documents. Internal documents add context but never count as customer evidence alone.
+interviews, `SUP-118` tickets, `FUN-01` funnel or analytics notes, `REV-01` saved public review pages,
+`DOC-01` internal or company documents. Company documents add context but never count as
+customer evidence alone.
 
 ### 2. Check for private details before reading further (card 3a)
 Run `python scripts/jtbd_files.py privacy <research> [--denylist private/denylist.txt]`.
@@ -78,9 +79,10 @@ python scripts/check_quotes.py evidence.csv <research folder>
 python scripts/jtbd_files.py validate evidence.csv
 python scripts/coverage.py evidence.csv <research folder> --product-terms "<your product names>"
 ```
-Fix every quote reported NOT FOUND: copy the words exactly, or drop the row. Then report:
+Fix every quote reported NOT FOUND: copy the words exactly, or drop the row. Then report, always
+saying how many of the readable sources gave quotes and naming any that gave none:
 
-> "Done. I pulled out 412 quotes and checked each one against its source. One interview (Front desk 5) had nothing relevant, so it won't shape the results."
+> "Done. I pulled out 412 quotes and checked each one against its source. 23 of 24 readable sources gave quotes; one interview (Front desk 5) had nothing relevant, so it won't shape the results."
 
 If more than about a third of quotes mention your own products, say the interview guide may
 have been leading.

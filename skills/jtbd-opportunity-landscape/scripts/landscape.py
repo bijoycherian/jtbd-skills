@@ -96,6 +96,7 @@ NOT_EXIST = re.compile(r"\b(don'?t|do not|can'?t|cannot|no) (have )?(the )?(opti
 SOLUTION = re.compile(r"\b(app|feature|button|chat|dashboard|portal|integration|notification|reminders?|"
                       r"automatic(ally)?|real[- ]time|documentation|api|plugin|widget|screen|tab)\b", re.I)
 # Company voice: internal diagnoses and product jargon. Add your own acronyms here.
+UNKNOWN_SAT = re.compile(r"satisfaction unknown|no (direct )?evidence on (how well|satisfaction)", re.I)
 COMPANY = re.compile(r"\b(because (we|the company|our product) (is|are)n?'?t|our platform|marketplace|PDP|SKU|e2e)\b", re.I)
 
 
@@ -348,9 +349,29 @@ def score(rows, assumed_flag, by_persona=False):
         else:
             r["margin"] = ""
             opp = r["opportunity"]
-            if (any(abs(opp - t) <= 0.25 for t in (SOLID_OPP, HIGH_OPP))
-                    or any(abs(sat - t) <= 1 for t in (MODEST_SAT_MIN, TABLE_STAKES_SAT))):
-                flags.append("borderline")
+            near = [(t, n) for t, n in ((SOLID_OPP, "Solid"), (HIGH_OPP, "High"))
+                    if abs(opp - t) <= 0.25 and sat < MODEST_SAT_MIN]
+            near_sat = [(t, n) for t, n in ((MODEST_SAT_MIN, "Modest"), (TABLE_STAKES_SAT, "Table stakes"))
+                        if abs(sat - t) <= 1]
+            if near:
+                t, n = near[0]
+                where = f"right on the {n} line ({t})" if abs(opp - t) < 0.05 else \
+                    f"{abs(opp - t):.1f} from the {n} line ({t})"
+                flags.append(f"borderline: score {opp:.1f} is {where}, "
+                             "so a small change in either estimate could move its zone")
+            elif near_sat:
+                t, n = near_sat[0]
+                flags.append(f"borderline: satisfaction {sat:.0f} is within a point of the {n} line ({t}), "
+                             "so a small change could move its zone")
+            if jf.norm_source(r.get("source") or "ai") != "survey":
+                srcs = {e["id"] for e in split_evidence(r.get("evidence", ""))
+                        if e["id"] and not e["id"].startswith("DOC-")}
+                if len(srcs) < 2:
+                    flags.append(f"thin evidence: rests on {len(srcs)} source{'' if len(srcs) == 1 else 's'}, "
+                                 "so treat the zone as a lead to survey, not a finding")
+                if UNKNOWN_SAT.search(r.get("satisfaction_reason", "")):
+                    flags.append("no evidence on satisfaction: no quote says how well this works today, "
+                                 "so its zone is the least certain on the map")
         barrier, goal = r.get("barrier", ""), r.get("goal", "")
         if sat >= MODEST_SAT_MIN and NOT_EXIST.search(barrier):
             flags.append("barrier says it can't be done, yet satisfaction ≥ 80")
@@ -553,7 +574,8 @@ def write_html(rows, path, title, study, logs=(), meta=None):
     ids = {e["id"] for r in rows for k in ("evidence", "contradicts") for e in split_evidence(r.get(k, "")) if e["id"]}
     kinds = [("INT", "interview", "interviews"), ("FD", "staff interview", "staff interviews"),
              ("SUP", "support item", "support items"),
-             ("FUN", "funnel observation", "funnel observations"), ("DOC", "document", "documents"),
+             ("FUN", "funnel observation", "funnel observations"), ("REV", "public source", "public sources"),
+             ("DOC", "document", "documents"),
              ("SUR", "survey note", "survey notes")]
     parts = []
     for pre, one, many in kinds:

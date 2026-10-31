@@ -41,8 +41,13 @@ Adjust:
 | 70–85 | Mostly works; minor complaints |
 | 86–95 | Praised; no complaints |
 
-No evidence about how well it works today → **50**, and say "satisfaction unknown" in
-the reason.
+**Never set a score by default.** A fixed number placed a thin job in a confident zone
+(a job with satisfaction set to 50 and low importance lands in Over-served). Estimate
+satisfaction from the job's own quotes, like any other job: people describing the need with
+no one saying it is met already points to 30–49. When no quote speaks to how well it works
+today, give that best estimate and start the reason with "No evidence on satisfaction:", so
+the script flags it. Jobs resting on one source are flagged too (`thin evidence`), and the
+read-out names both as the first jobs to survey.
 
 ### Spread check
 
@@ -161,6 +166,11 @@ Doing this by hand (no code): use the margin and say which boundary it crosses.
 
 Without `n`, mark a statement **borderline** when its opportunity score is within
 0.25 of 10 or 12, or its satisfaction within 1 point of 80 or 85.
+
+Without a survey, `landscape.py` also flags **thin evidence** (fewer than two independent
+sources, counting sources rather than quotes, `DOC-` never counted) and **no evidence on
+satisfaction** (the reason starts "No evidence on satisfaction:"). Every flag is written as a
+plain sentence; the page shows them under the job's Check badge.
 
 ### Statement checks before surveying or plotting
 

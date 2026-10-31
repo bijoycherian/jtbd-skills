@@ -40,3 +40,7 @@ schema_version,evidence_id,source_id,location,quote,type,behavior,speaker_role,c
   missing capability usually is.
 - **Staff interviews** (front desk, support agents) are evidence *about* customers. The staff
   member is a speaker role, not a persona.
+- **Public reviews** (`REV-` sources, saved pages with reviewer names replaced): people mostly
+  write when something breaks, so reviews over-represent friction. Say so in the coverage report,
+  and treat a missing goal or alternative as a gap, not as evidence that it doesn't matter. The
+  speaker role is `reviewer` unless the review says more ("PC gamer", "parent").

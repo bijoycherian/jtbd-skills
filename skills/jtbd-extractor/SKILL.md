@@ -1,6 +1,6 @@
 ---
 name: jtbd-extractor
-description: Turns customer evidence into jobs to be done in When / But / Help me / So form, each linked to the quotes behind it. Checks that the research question is about people rather than your product, proposes the main goal, who and when for the user to confirm, then drafts the job list for the user to merge, split, rename or drop. Use when there are quotes or an evidence.csv and the team needs the jobs customers are trying to get done, including when quotes are pasted inline, or when job statements need checking for solution words or links back to evidence. Runs second in the /jtbd workflow.
+description: Turns customer evidence into jobs to be done in When / But / Help me / So form, each linked to the quotes behind it. Checks that the research question is about people rather than your product, proposes the main goal, who and when for the user to confirm, then drafts the job list for the user to merge, split, rename or drop. Use when there are quotes or an evidence.csv and the team needs the jobs customers are trying to get done, including when quotes are pasted inline, or when job statements need checking for solution words or links back to evidence, or when the user sends back edits (merge, split, rename, drop) to a draft job list labelled D1, D2… or saved as drafts.csv. Runs second in the /jtbd workflow.
 license: MIT
 user-invocable: false
 ---
@@ -64,11 +64,12 @@ product didn't exist (8); the survey wording reads naturally (10). Record each r
 `before → after (check #)`.
 
 ### 6. Checkpoint 2: the job list (card 5)
-Show the drafts by stage, one line each, and wait. Apply merges, splits, renames and drops,
+Show the drafts by stage, one line each, and wait. If the user arrives with edits to an earlier
+draft list (`drafts.csv`, or D1, D2… labels), start here. Apply merges, splits, renames and drops,
 re-run step 5, then:
 ```bash
 python scripts/jtbd_files.py renumber drafts.csv --out jobs.csv
-python scripts/jtbd_files.py validate jobs.csv --evidence evidence.csv
+python scripts/jtbd_files.py validate jobs.csv --evidence evidence.csv --unscored
 ```
 Confirm with the counts and what changed ("Done: 9 jobs, numbered 1 to 9…").
 
@@ -106,5 +107,5 @@ Opportunity Landscape scores these jobs. In /jtbd that happens now; on its own, 
 - [ ] Checkpoint 1 and 2 replies in the transcript, or "just run it" recorded
 - [ ] `lint_jobs.py` shows 0 issues, or each remaining one is listed with a reason
 - [ ] `check_links.py` shows 0 broken
-- [ ] `jtbd_files.py validate jobs.csv --evidence evidence.csv` shows 0 errors
+- [ ] `jtbd_files.py validate jobs.csv --evidence evidence.csv --unscored` shows 0 errors
 - [ ] Next step given in one line

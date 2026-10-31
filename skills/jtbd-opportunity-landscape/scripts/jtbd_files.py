@@ -5,7 +5,7 @@ Every skill carries an identical copy of this file in its scripts/ folder, so ea
 works when installed on its own.
 
 Commands:
-    python jtbd_files.py validate FILE.csv [--evidence evidence.csv]
+    python jtbd_files.py validate FILE.csv [--evidence evidence.csv] [--unscored]
     python jtbd_files.py migrate OLD_jobs.csv [--out jobs.csv]       v0.6 jobs file -> schema 1.0
     python jtbd_files.py renumber drafts.csv --out jobs.csv           D1, D2 ... -> 1, 2 ...
     python jtbd_files.py change jobs.csv --label 5 --importance 85 --source judgement \
@@ -246,7 +246,9 @@ def validate_evidence(path):
     return errs, warns, rows
 
 
-def validate_jobs(path, evidence_path=None):
+def validate_jobs(path, evidence_path=None, unscored=False):
+    """unscored=True: the Extractor's hand-over, before scoring. Importance, satisfaction and
+    source may then be blank together; anything else is checked as usual."""
     jobs, logs, calib, header = read_jobs(path)
     errs, warns = [], []
     legacy = "record_type" not in header
@@ -271,15 +273,18 @@ def validate_jobs(path, evidence_path=None):
         labels.add(L)
         if re.fullmatch(r"D\d+", L):
             errs.append(f"job {L}: still has a draft label; renumber after checkpoint 2")
+        blank_scores = unscored and not j.get("importance") and not j.get("satisfaction")
         for c in REQUIRED_JOB:
-            if c != "source" and not j.get(c):
+            if c != "source" and not j.get(c) and not (blank_scores and c in ("importance", "satisfaction")):
                 errs.append(f"job {L}: {c} is blank")
         for c in ("importance", "satisfaction"):
             x = num(j.get(c))
             if j.get(c) and (x is None or not 0 <= x <= 100):
                 errs.append(f"job {L}: {c} must be 0-100")
         src = j.get("source")
-        if src not in SOURCES:
+        if blank_scores:
+            src = None
+        elif src not in SOURCES:
             errs.append(f"job {L}: source {src!r} is not one of {', '.join(SOURCES)}")
         if src == "ai":
             for c in ("importance_reason", "satisfaction_reason", "confidence"):
@@ -489,6 +494,7 @@ def _cli():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
     v = sub.add_parser("validate"); v.add_argument("file"); v.add_argument("--evidence")
+    v.add_argument("--unscored", action="store_true", help="jobs not scored yet (the Extractor's hand-over)")
     m = sub.add_parser("migrate"); m.add_argument("file"); m.add_argument("--out")
     n = sub.add_parser("renumber"); n.add_argument("file"); n.add_argument("--out", required=True)
     c = sub.add_parser("change"); c.add_argument("file"); c.add_argument("--label", required=True)
@@ -513,7 +519,7 @@ def _cli():
             errs, warns, rows = validate_evidence(a.file)
             what = f"{len(rows)} quotes"
         else:
-            errs, warns, rows = validate_jobs(a.file, a.evidence)
+            errs, warns, rows = validate_jobs(a.file, a.evidence, a.unscored)
             what = f"{len(rows)} jobs"
         for w in warns:
             print("warning:", w)
@@ -614,9 +620,14 @@ def _cli():
             files = [os.path.join(r, f) for r, _, fs in os.walk(pth) for f in sorted(fs)] if os.path.isdir(pth) else [pth]
             for fp in files:
                 try:
-                    txt = open(fp, encoding="utf-8", errors="replace").read()
+                    raw = open(fp, "rb").read()
                 except OSError:
                     continue
+                if b"\0" in raw[:8192]:
+                    # binary (a scan, an image, a PDF): reading its bytes as text finds false "phone numbers"
+                    print(f"{os.path.relpath(fp)}: not plain text, skipped (check its text once extracted)")
+                    continue
+                txt = raw.decode("utf-8", errors="replace")
                 for line, kind in privacy_findings(txt, deny):
                     hits += 1
                     print(f"{os.path.relpath(fp)}, line {line}: contains {kind}")

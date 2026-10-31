@@ -45,7 +45,11 @@ message and wait before scoring:
 > "Two quick questions before I score them: 1. What do you want to learn about your customers? For example: 'Where do guests struggle to make their stay fit around their travel plans?' 2. Is there a decision this should inform? (optional) For example: 'Where should Guest Revenue focus in 2027?'"
 
 Any reply that answers starts the run; "no decision yet" is an answer. "Just run it" doesn't skip
-them. Pass the answers to `landscape.py` as `--question` and `--decision`. Don't ask when the
+them. The examples are only examples: a bare "yes" or "ok" doesn't adopt them, so ask once more
+for the user's own question. Then run the framing check on the answer before scoring (the
+checks and the framing card in `../jtbd-extractor/references/framing.md`, a path from this skill's folder), exactly as on the other routes;
+a "keep mine" becomes `--framing-note`. Pass the answers to `landscape.py` as `--question` and
+`--decision`. Don't ask when the
 user is applying edits, asking about a score, recording a decision, or reviewing someone else's
 landscape.
 
@@ -74,15 +78,18 @@ python scripts/landscape.py jobs.csv --html --out out/ --name <study> --title "<
 ```
 Outputs: `<study>_map.html`, `<study>_scores.xlsx` (formulas, Evidence, Survey, Decision log
 and Rules sheets), `<study>_map.png`, `<study>_ranked.csv`. If the tool can publish an
-interactive page with downloads, publish the HTML that way; otherwise send the file. Check the file
-list the script prints; if anything says NOT BUILT, say which and how to fix it.
+interactive page, publish the HTML with downloads switched on; otherwise send the file. Either way,
+also send the spreadsheet and `jobs.csv` as files in the chat, so the next study works even if the
+page's downloads don't. Never edit these files by hand: change inputs and run the script again.
+Check the file list the script prints; if anything says NOT BUILT, say which and how to fix it.
 
 ### 5. Read-out (card 6)
 Short, in this order: where people struggle (zone counts and the top underserved jobs, each with
 its evidence); then "For the decision (…)", if there is one; then how far to trust the scores
 (the `based-on` line and its note). Then what to protect (Table stakes), what's over-served, and
 contradictions. Take every count from the `Zones:` line `landscape.py` prints; never count zones
-by eye. If anything changed since the last run, add "What changed and why" from the log.
+by eye. Jobs flagged "thin evidence" or "no evidence on satisfaction" go under how far to trust the
+scores, named as the first jobs to survey; never present their zone as a finding. If anything changed since the last run, add "What changed and why" from the log.
 
 > "Underserved: 6 of 9 jobs. The biggest gap is the hours before check-in and after checkout. For the decision (where Guest Revenue should focus in 2027): start with the hours around the stay (jobs 3 and 7). Guests already pay for an extra night to keep a room, so the need is real and worth money. All scores are AI estimates: good for choosing what to survey. Run the survey before deciding what to build."
 
