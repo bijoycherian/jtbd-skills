@@ -9,7 +9,7 @@
       "name": "jtbd-skills",
       "displayName": "JTBD Opportunity Landscape",
       "source": "./",
-      "description": "Understand your customers deeply. Turn customer interviews, or what people say about any website, into ranked jobs to be done, with the quotes behind each one. Try /jtbd https://www.airbnb.com/, or /jtbd with your interview notes attached. AI estimates are labelled, and you can challenge any score.",
+      "description": "Understand your customers deeply. Turn customer interviews and online feedback into an opportunity map of ranked jobs to be done, with the quotes behind each job and clearly labelled AI-estimated scores you can review and edit. Run /jtbd with your research or a company’s website, for example /jtbd https://www.airbnb.com/",
       "category": "product",
       "keywords": [
         "jobs-to-be-done",
