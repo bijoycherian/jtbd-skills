@@ -64,7 +64,7 @@ Each score is labelled as an initial AI estimate, an AI estimate revised using c
 4. Start a new chat and type `/jtbd`.
 5. Attach your research—transcripts, tickets, or notes—and say what you want to learn and what decision it will inform. Using real customer data? Read [Data and privacy](#data-and-privacy) first.
 
-**No research yet?** Give it a website instead, for example `/jtbd https://www.airbnb.com/`. It asks which customers and which decision, gathers what those customers say in public reviews, forums and press, and builds the map from those quotes. Web search needs to be on.
+**No research yet?** Give it a website instead, for example `/jtbd https://www.airbnb.com/`. It asks which customers and which decision, gathers what those customers say in public reviews, forums and press, and builds the map from those quotes. 
 
 To update, open the plugin's marketplace and choose **Sync**, then **Update** on the plugin.
 
