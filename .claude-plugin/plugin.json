@@ -1,7 +1,7 @@
 {
   "name": "jtbd-skills",
   "displayName": "JTBD Opportunity Landscape",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Understand your customers deeply. Turn customer interviews, or what people say about any website, into ranked jobs to be done, with the quotes behind each one. Try /jtbd https://www.airbnb.com/, or /jtbd with your interview notes attached. AI estimates are labelled, and you can challenge any score.",
   "author": {
     "name": "Bijoy Cherian"

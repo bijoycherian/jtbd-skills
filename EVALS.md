@@ -2,8 +2,9 @@
 
 What we promise, what "good" means at each stage, the bar a release must clear, and the headline
 results. The tiers follow [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills/tree/main/evals),
-plus a scoring tier of our own (Tier 0), because zones must never vary between runs. Four of the behaviour cases are published in [`eval-samples/`](eval-samples/) so you can see,
-and run, how they work; the other 25 of the 29 cases stay in the development repo.
+plus a scoring tier of our own (Tier 0), because zones must never vary between runs. The 29 cases live in the development repo, not in the plugin: the Claude app labels a plugin that
+carries eval cases "Can run code without asking", and this plugin only adds instructions. Four of
+them are described under [Sample cases](#sample-cases).
 
 ## What we promise
 
@@ -49,7 +50,7 @@ The stages follow Bryan Bischof's capability funnel.
 | **4 Intent match**<br>Did it do what the user asked, the way they asked? | Checkpoints happen; "just run it" skips check-ins but never the framing check; every edit is logged with its reason | A silent edit, a skipped checkpoint, a lost reason | `extractor-pressure-just-run-it`, `extractor-checkpoint-2`, `landscape-edit-with-reason` |
 | **5 Solves the job**<br>Can the team decide from evidence it can trace? | The team records a decision from the map, with its quotes; survey answers replace AI estimates | A decision with no quotes, an estimate treated as fact, survey answers ignored | `landscape-record-decision`, `landscape-survey-ratings` |
 
-Only the cases in `eval-samples/` are public; the others are in the development repo.
+The cases themselves are in the development repo; four are described under [Sample cases](#sample-cases).
 
 ## Release bar
 
@@ -83,7 +84,7 @@ shows in the cases that need checked quotes, scripted scores and a logged histor
 
 ## Sample cases
 
-[`eval-samples/`](eval-samples/) holds four cases, each with its prompt and graders. Three use the
+Four of the cases, each with its prompt and graders. Three use the
 fictional Larkstay study in [`examples/larkstay/`](examples/larkstay/); the website case brings its own
 fictional saved pages (KeyHarbor), since evals run without web access.
 
@@ -106,18 +107,12 @@ PASS if it offers 3 choices: the suggested question (marked recommended), the us
 FAIL if it offers fewer, or refuses to continue.
 ```
 
-To run them (this spends tokens):
-
-```bash
-claude plugin eval . --eval-dir eval-samples --trust-plugin --scaffold --allow-tools Bash Write Edit
-```
-
-`--scaffold` runs each case's `scaffold.sh`, which writes the Larkstay files into the case's
-empty workspace.
+The cases aren't shipped with the plugin, so they can't be run from it. Open an issue if
+you'd like the case files.
 
 ## Example: one run, judged
 
-Illustrative; not part of a release result. The framing case from `eval-samples/`, run on 2026-10-21 with a 1.0.2 development build, Claude Code 2.1.306, `claude-sonnet-5-5` and the default judge.
+Illustrative; not part of a release result. The framing case below, run on 2026-10-21 with a 1.0.2 development build, Claude Code 2.1.306, `claude-sonnet-5-5` and the default judge.
 
 **Prompt:** "Here's our evidence file (evidence.csv). Research question: which guest revenue product should we fund in Q1 2027? Turn it into jobs."
 
