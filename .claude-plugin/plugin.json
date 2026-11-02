@@ -2,7 +2,7 @@
   "name": "jtbd-skills",
   "displayName": "JTBD Opportunity Landscape",
   "version": "1.0.3",
-  "description": "Understand your customers deeply. Turn customer interviews or online feedback into an opportunity map of ranked jobs to be done, with the quotes behind each job and clearly labelled AI-estimated scores you can review and edit. Run /jtbd with your customer research files or start with a company’s website—for example: /jtbd https://www.airbnb.com/.",
+  "description": "Understand your customers deeply. Turn customer interviews or online feedback into an opportunity map of ranked jobs to be done, with the quotes behind each job and clearly labelled AI-estimated scores you can review and edit.\n\nRun /jtbd with your research files, or a product or service website—for example:\n\n/jtbd https://www.airbnb.com/",
   "author": {
     "name": "Bijoy Cherian"
   },
